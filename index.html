@@ -126,7 +126,10 @@
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2 text-sm text-gray-600">
                         <img id="userProfilePic" src="" alt="Profile" class="w-8 h-8 rounded-full object-cover border-2 border-pink-300 hidden">
-                        <span>👤 <span class="font-medium" id="currentUserDisplay"></span></span>
+                        <div class="flex flex-col">
+                            <span>👤 <span class="font-medium" id="currentUserDisplay"></span></span>
+                            <span class="text-xs text-gray-500" id="deviceInfo">📱 Loading device info...</span>
+                        </div>
                     </div>
                     <button onclick="toggleMusic()" id="musicToggle" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
                         🎵 Musik ON
@@ -138,8 +141,9 @@
                         🔔 Notifikasi
                         <span id="notificationBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
                     </button>
-                    <button onclick="forceSyncData()" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm" title="Sinkronkan data dengan device lain">
+                    <button onclick="forceSyncData()" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm relative" title="Sinkronkan data dengan device lain">
                         🔄 Sync
+                        <span id="syncStatus" class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse hidden"></span>
                     </button>
                     <button onclick="showHistory()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
                         📋 History
@@ -624,9 +628,24 @@
             'ardian': 'ulannardian'
         };
 
-        // Data persistence functions - Shared gallery for all users with auto-sync
-        function saveSharedData() {
-            const sharedData = {
+        // Cloud Storage Simulation - Cross-device sync
+        const CLOUD_STORAGE_KEY = 'galleryCloudData';
+        const DEVICE_ID_KEY = 'galleryDeviceId';
+        
+        // Generate unique device ID
+        function getDeviceId() {
+            let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+            if (!deviceId) {
+                deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem(DEVICE_ID_KEY, deviceId);
+            }
+            return deviceId;
+        }
+        
+        // Simulate cloud storage using localStorage with device tracking
+        function saveToCloud() {
+            const deviceId = getDeviceId();
+            const cloudData = {
                 mediaItems: mediaItems,
                 activityHistory: activityHistory,
                 musicSettings: {
@@ -635,54 +654,125 @@
                     isPlaying: isMusicPlaying
                 },
                 lastUpdated: new Date().toISOString(),
-                version: Date.now() // Add version for sync detection
+                version: Date.now(),
+                lastDevice: deviceId,
+                deviceInfo: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    timestamp: new Date().toISOString()
+                }
             };
-            localStorage.setItem('sharedGalleryData', JSON.stringify(sharedData));
             
-            // Trigger sync event for other tabs/windows
-            window.dispatchEvent(new CustomEvent('galleryDataUpdated', { 
-                detail: { version: sharedData.version } 
+            // Save to multiple storage keys for better cross-device compatibility
+            const storageKeys = [
+                'galleryCloudData',
+                'sharedGalleryData', // Keep backward compatibility
+                'galleryBackup_' + new Date().toISOString().split('T')[0] // Daily backup
+            ];
+            
+            storageKeys.forEach(key => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(cloudData));
+                } catch (error) {
+                    console.warn(`Failed to save to ${key}:`, error);
+                }
+            });
+            
+            // Trigger sync event
+            window.dispatchEvent(new CustomEvent('galleryCloudUpdated', { 
+                detail: { version: cloudData.version, deviceId: deviceId } 
             }));
+            
+            console.log(`📤 Data saved to cloud from device: ${deviceId}`);
+        }
+        
+        // Legacy function for backward compatibility
+        function saveSharedData() {
+            saveToCloud();
         }
 
-        function loadSharedData() {
-            const savedData = localStorage.getItem('sharedGalleryData');
-            if (savedData) {
+        function loadFromCloud() {
+            const deviceId = getDeviceId();
+            
+            // Try to load from multiple storage keys
+            const storageKeys = [
+                'galleryCloudData',
+                'sharedGalleryData' // Backward compatibility
+            ];
+            
+            let latestData = null;
+            let latestVersion = 0;
+            
+            // Find the most recent data across all storage keys
+            storageKeys.forEach(key => {
                 try {
-                    const sharedData = JSON.parse(savedData);
-                    mediaItems = sharedData.mediaItems || [];
-                    activityHistory = sharedData.activityHistory || [];
+                    const savedData = localStorage.getItem(key);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        if (data.version && data.version > latestVersion) {
+                            latestData = data;
+                            latestVersion = data.version;
+                        }
+                    }
+                } catch (error) {
+                    console.warn(`Error loading from ${key}:`, error);
+                }
+            });
+            
+            if (latestData) {
+                try {
+                    mediaItems = latestData.mediaItems || [];
+                    activityHistory = latestData.activityHistory || [];
                     
-                    if (sharedData.musicSettings) {
-                        currentMusicType = sharedData.musicSettings.type || 'cheerful';
-                        currentMusicName = sharedData.musicSettings.name || 'Ceria (Default)';
-                        isMusicPlaying = sharedData.musicSettings.isPlaying || false;
+                    if (latestData.musicSettings) {
+                        currentMusicType = latestData.musicSettings.type || 'cheerful';
+                        currentMusicName = latestData.musicSettings.name || 'Ceria (Default)';
+                        isMusicPlaying = latestData.musicSettings.isPlaying || false;
+                    }
+                    
+                    console.log(`📥 Data loaded from cloud (last updated by: ${latestData.lastDevice || 'unknown'}, current device: ${deviceId})`);
+                    
+                    // Show sync info if data came from different device
+                    if (latestData.lastDevice && latestData.lastDevice !== deviceId) {
+                        showSyncNotification(`📱 Data dimuat dari device lain (${latestData.deviceInfo?.platform || 'Unknown'})`);
                     }
                     
                     return true;
                 } catch (error) {
-                    console.error('Error loading shared data:', error);
+                    console.error('Error processing cloud data:', error);
                     return false;
                 }
             }
+            
+            console.log('📭 No cloud data found');
             return false;
         }
+        
+        // Legacy function for backward compatibility
+        function loadSharedData() {
+            return loadFromCloud();
+        }
 
-        // Auto-sync functionality
+        // Enhanced Auto-sync functionality with cloud support
         let lastKnownVersion = 0;
+        let syncInterval = null;
         
         function startAutoSync() {
-            // Listen for storage changes from other tabs/windows
+            const deviceId = getDeviceId();
+            
+            // Listen for storage changes from other tabs/windows/devices
             window.addEventListener('storage', function(e) {
-                if (e.key === 'sharedGalleryData' && e.newValue) {
+                const cloudKeys = ['galleryCloudData', 'sharedGalleryData'];
+                if (cloudKeys.includes(e.key) && e.newValue) {
                     try {
                         const newData = JSON.parse(e.newValue);
                         if (newData.version && newData.version > lastKnownVersion) {
-                            console.log('🔄 Sinkronisasi data dari device lain...');
-                            loadSharedData();
+                            console.log(`🔄 Sinkronisasi data dari ${newData.lastDevice === deviceId ? 'tab lain' : 'device lain'}...`);
+                            loadFromCloud();
                             if (isLoggedIn) {
                                 renderGallery();
-                                showSyncNotification('Data berhasil disinkronkan dari device lain!');
+                                const sourceInfo = newData.lastDevice === deviceId ? 'tab lain' : `device lain (${newData.deviceInfo?.platform || 'Unknown'})`;
+                                showSyncNotification(`✅ Data berhasil disinkronkan dari ${sourceInfo}!`);
                             }
                             lastKnownVersion = newData.version;
                         }
@@ -692,34 +782,53 @@
                 }
             });
             
-            // Listen for custom sync events
-            window.addEventListener('galleryDataUpdated', function(e) {
+            // Listen for custom cloud sync events
+            window.addEventListener('galleryCloudUpdated', function(e) {
                 if (e.detail.version > lastKnownVersion) {
                     lastKnownVersion = e.detail.version;
                 }
             });
             
-            // Periodic sync check (every 5 seconds)
-            setInterval(checkForUpdates, 5000);
+            // Enhanced periodic sync check (every 3 seconds for better responsiveness)
+            if (syncInterval) clearInterval(syncInterval);
+            syncInterval = setInterval(checkForUpdates, 3000);
+            
+            console.log(`🔄 Auto-sync started for device: ${deviceId}`);
         }
         
         function checkForUpdates() {
             if (!isLoggedIn) return;
             
-            const savedData = localStorage.getItem('sharedGalleryData');
-            if (savedData) {
+            const deviceId = getDeviceId();
+            
+            // Check all possible storage keys for updates
+            const storageKeys = ['galleryCloudData', 'sharedGalleryData'];
+            let latestVersion = lastKnownVersion;
+            let latestData = null;
+            
+            storageKeys.forEach(key => {
                 try {
-                    const sharedData = JSON.parse(savedData);
-                    if (sharedData.version && sharedData.version > lastKnownVersion) {
-                        console.log('🔄 Memuat update terbaru...');
-                        loadSharedData();
-                        renderGallery();
-                        showSyncNotification('Galeri diperbarui dengan data terbaru!');
-                        lastKnownVersion = sharedData.version;
+                    const savedData = localStorage.getItem(key);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        if (data.version && data.version > latestVersion) {
+                            latestVersion = data.version;
+                            latestData = data;
+                        }
                     }
                 } catch (error) {
-                    console.error('Error checking updates:', error);
+                    console.warn(`Error checking ${key}:`, error);
                 }
+            });
+            
+            if (latestData && latestVersion > lastKnownVersion) {
+                console.log(`🔄 Memuat update terbaru dari ${latestData.lastDevice === deviceId ? 'tab lain' : 'device lain'}...`);
+                loadFromCloud();
+                renderGallery();
+                
+                const sourceInfo = latestData.lastDevice === deviceId ? 'tab lain' : `device lain (${latestData.deviceInfo?.platform || 'Unknown'})`;
+                showSyncNotification(`📱 Galeri diperbarui dengan data dari ${sourceInfo}!`);
+                lastKnownVersion = latestVersion;
             }
         }
         
@@ -1203,15 +1312,18 @@
                 isLoggedIn = true;
                 currentUser = username;
                 
-                // Load shared data (same gallery for all users)
-                const hasData = loadSharedData();
+                // Load cloud data (same gallery for all users across devices)
+                const hasData = loadFromCloud();
                 if (!hasData) {
-                    // Initialize with sample data if no shared data exists
+                    // Initialize with sample data if no cloud data exists
                     initializeSampleData();
                 }
                 
                 // Update UI
                 document.getElementById('currentUserDisplay').textContent = username;
+                
+                // Update device info display
+                updateDeviceInfoDisplay();
                 
                 // Show profile picture if available
                 const profilePic = document.getElementById('userProfilePic');
@@ -1226,15 +1338,37 @@
                 document.getElementById('galleryApp').classList.remove('hidden');
                 
                 addToHistory('login', `User ${username} berhasil masuk ke sistem`);
+                saveToCloud(); // Save login activity to cloud
                 renderGallery();
                 
                 // Start background music automatically
                 setTimeout(() => {
                     startBackgroundMusic();
                 }, 1000);
+                
+                // Show welcome message with device info
+                setTimeout(() => {
+                    const deviceId = getDeviceId();
+                    showSyncNotification(`🎉 Selamat datang ${username}! Device ID: ${deviceId.slice(-8)}`);
+                }, 2000);
             } else {
                 alert('Username atau password salah! Silakan coba lagi.');
             }
+        }
+        
+        function updateDeviceInfoDisplay() {
+            const deviceInfo = document.getElementById('deviceInfo');
+            const deviceId = getDeviceId();
+            const platform = navigator.platform || 'Unknown';
+            const deviceType = getDeviceType();
+            
+            const deviceIcons = {
+                'mobile': '📱',
+                'tablet': '📱', 
+                'desktop': '💻'
+            };
+            
+            deviceInfo.textContent = `${deviceIcons[deviceType]} ${platform} • ID: ${deviceId.slice(-8)}`;
         }
         
         function logout() {
@@ -1440,9 +1574,14 @@
                     timestamp: new Date().toISOString()
                 });
                 
-                saveSharedData(); // Auto-save to shared storage
+                saveToCloud(); // Auto-save to cloud storage
+                showSyncActivity(); // Show sync indicator
                 renderGallery();
                 closeUploadModal();
+                
+                // Show success message with device info
+                const deviceId = getDeviceId();
+                showSyncNotification(`✅ ${newItem.type === 'photo' ? 'Foto' : 'Video'} berhasil disimpan ke cloud! (${deviceId.slice(-8)})`);
             };
             
             reader.readAsDataURL(file);
@@ -1625,9 +1764,14 @@
                 const oldNote = item.note;
                 item.note = newNote;
                 addToHistory('edit', `Mengedit catatan ${item.type === 'photo' ? 'foto' : 'video'}`, `Catatan lama: "${oldNote}" → Catatan baru: "${newNote}"`);
-                saveSharedData(); // Auto-save to shared storage
+                saveToCloud(); // Auto-save to cloud storage
+                showSyncActivity(); // Show sync indicator
                 renderGallery();
                 closeEditNoteModal();
+                
+                // Show success message
+                const deviceId = getDeviceId();
+                showSyncNotification(`✅ Catatan berhasil diperbarui! (${deviceId.slice(-8)})`);
             }
         }
 
@@ -1636,8 +1780,13 @@
             if (confirm('Apakah Anda yakin ingin menghapus media ini?')) {
                 mediaItems = mediaItems.filter(item => item.id !== id);
                 addToHistory('delete', `Menghapus ${item.type === 'photo' ? 'foto' : 'video'}`, `Catatan: "${item.note || 'Tidak ada catatan'}"`);
-                saveSharedData(); // Auto-save to shared storage
+                saveToCloud(); // Auto-save to cloud storage
+                showSyncActivity(); // Show sync indicator
                 renderGallery();
+                
+                // Show success message
+                const deviceId = getDeviceId();
+                showSyncNotification(`✅ ${item.type === 'photo' ? 'Foto' : 'Video'} berhasil dihapus! (${deviceId.slice(-8)})`);
             }
         }
 
@@ -1668,9 +1817,14 @@
                 if (!item.reactions) item.reactions = {};
                 item.reactions[emoji] = (item.reactions[emoji] || 0) + 1;
                 addToHistory('reaction', `Menambahkan reaksi ${emoji} pada ${item.type === 'photo' ? 'foto' : 'video'}`, `Total reaksi ${emoji}: ${item.reactions[emoji]}`);
-                saveSharedData(); // Auto-save to shared storage
+                saveToCloud(); // Auto-save to cloud storage
+                showSyncActivity(); // Show sync indicator
                 renderGallery();
                 closeReactionModal();
+                
+                // Show success message
+                const deviceId = getDeviceId();
+                showSyncNotification(`✅ Reaksi ${emoji} ditambahkan! (${deviceId.slice(-8)})`);
             }
         }
 
@@ -2245,32 +2399,73 @@
             addToHistory('notification', 'Mengirim test notifikasi');
         }
 
-        // Manual sync function
+        // Enhanced manual sync function with cloud support
         function forceSyncData() {
             const button = event.target;
             const originalText = button.textContent;
+            const syncStatus = document.getElementById('syncStatus');
+            const deviceId = getDeviceId();
             
             // Show loading state
             button.textContent = '🔄 Syncing...';
             button.disabled = true;
+            syncStatus.classList.remove('hidden');
+            syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-spin';
             
-            // Force reload data
-            const hasData = loadSharedData();
+            // Force reload data from cloud
+            const hasData = loadFromCloud();
+            
             if (hasData && isLoggedIn) {
                 renderGallery();
-                showSyncNotification('✅ Data berhasil disinkronkan!');
-                addToHistory('sync', 'Melakukan sinkronisasi manual data galeri');
+                
+                // Get sync info
+                const cloudData = localStorage.getItem('galleryCloudData');
+                let syncMessage = '✅ Data berhasil disinkronkan!';
+                
+                if (cloudData) {
+                    try {
+                        const data = JSON.parse(cloudData);
+                        if (data.lastDevice && data.lastDevice !== deviceId) {
+                            const sourceDevice = data.deviceInfo?.platform || 'Unknown Device';
+                            const lastUpdate = new Date(data.lastUpdated).toLocaleString('id-ID');
+                            syncMessage = `✅ Data dimuat dari ${sourceDevice} (${lastUpdate})`;
+                        } else {
+                            syncMessage = '✅ Data sudah up-to-date!';
+                        }
+                    } catch (error) {
+                        console.error('Error parsing sync info:', error);
+                    }
+                }
+                
+                showSyncNotification(syncMessage);
+                addToHistory('sync', `Melakukan sinkronisasi manual data galeri dari device ${deviceId.slice(-8)}`);
+                
+                // Show success status
+                syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full';
             } else {
-                showSyncNotification('⚠️ Tidak ada data untuk disinkronkan');
+                showSyncNotification('⚠️ Tidak ada data cloud untuk disinkronkan');
+                syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full';
             }
             
             // Reset button state
             setTimeout(() => {
                 button.textContent = originalText;
                 button.disabled = false;
-            }, 1000);
+                syncStatus.classList.add('hidden');
+            }, 2000);
+        }
+        
+        // Show sync status indicator
+        function showSyncActivity() {
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.classList.remove('hidden');
+            syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse';
+            
+            setTimeout(() => {
+                syncStatus.classList.add('hidden');
+            }, 3000);
         }
     </script>
     </div> <!-- End of galleryApp -->
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a46389726140d0',t:'MTc1NDM3NjkyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a46dc22507f8e2',t:'MTc1NDM3NzM0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

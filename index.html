@@ -56,16 +56,6 @@
             background: linear-gradient(135deg, #fce7f3 0%, #ffffff 50%, #fdf2f8 100%);
         }
     </style>
-
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Galeri Pink</title>
-  <link rel="icon" type="image/png" href="logo web.png">
-</head>
-<body>
-
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Login Page -->
@@ -73,15 +63,21 @@
         <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl max-w-md w-full p-8">
             <div class="text-center mb-8">
                 <!-- Logo/Photo -->
-                <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
-                        <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
-                        <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="36" cy="16" r="2" fill="white"/>
-                    </svg>
+                <div class="relative w-24 h-24 mx-auto mb-6 group">
+                    <div id="loginLogo" class="w-24 h-24 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl" onclick="openLogoCustomizer()">
+                        <img id="customLoginLogo" src="" alt="Custom Logo" class="w-full h-full object-cover rounded-full hidden">
+                        <svg id="defaultLoginLogo" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
+                            <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
+                            <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="36" cy="16" r="2" fill="white"/>
+                        </svg>
+                    </div>
+                    <button onclick="openLogoCustomizer()" class="absolute -bottom-2 -right-2 w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full shadow-lg transition-all duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-center text-sm">
+                        ✏️
+                    </button>
                 </div>
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">📸 Dump!</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">📸 Galeri Saya</h1>
                 <p class="text-gray-600">Masuk untuk mengakses galeri foto & video Anda</p>
             </div>
             
@@ -137,6 +133,10 @@
                     </button>
                     <button onclick="showMusicSelector()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
                         🎶 Pilih Musik
+                    </button>
+                    <button onclick="showNotificationSettings()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm relative">
+                        🔔 Notifikasi
+                        <span id="notificationBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
                     </button>
                     <button onclick="showHistory()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
                         📋 History
@@ -390,6 +390,174 @@
         </div>
     </div>
 
+    <!-- Logo Customizer Modal -->
+    <div id="logoCustomizerModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">🎨 Kustomisasi Logo</h2>
+                <button onclick="closeLogoCustomizer()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Current Logo Preview -->
+                <div class="text-center">
+                    <div class="w-20 h-20 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                        <img id="logoPreview" src="" alt="Logo Preview" class="w-full h-full object-cover rounded-full hidden">
+                        <svg id="defaultLogoPreview" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
+                            <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
+                            <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="36" cy="16" r="2" fill="white"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-gray-600">Preview Logo</p>
+                </div>
+                
+                <!-- Upload Custom Logo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📤 Upload Logo Baru</label>
+                    <input type="file" id="logoUpload" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="w-full border border-purple-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-300 focus:border-purple-300" onchange="previewLogo()">
+                    <div class="text-xs text-gray-500 mt-1">Format: JPG, PNG, GIF, WebP (Maks. 2MB)</div>
+                </div>
+                
+                <!-- Preset Logo Options -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">🎭 Pilih Logo Preset</label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button onclick="selectPresetLogo('default')" class="w-12 h-12 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
+                                <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
+                                <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="36" cy="16" r="2" fill="white"/>
+                            </svg>
+                        </button>
+                        <button onclick="selectPresetLogo('heart')" class="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">❤️</span>
+                        </button>
+                        <button onclick="selectPresetLogo('star')" class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">⭐</span>
+                        </button>
+                        <button onclick="selectPresetLogo('flower')" class="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">🌸</span>
+                        </button>
+                        <button onclick="selectPresetLogo('diamond')" class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">💎</span>
+                        </button>
+                        <button onclick="selectPresetLogo('crown')" class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">👑</span>
+                        </button>
+                        <button onclick="selectPresetLogo('moon')" class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">🌙</span>
+                        </button>
+                        <button onclick="selectPresetLogo('sun')" class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                            <span class="text-white text-xl">☀️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Background Color Options -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">🎨 Warna Latar Belakang</label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <button onclick="setLogoBgColor('from-pink-400 to-purple-600')" class="w-8 h-8 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-colors"></button>
+                        <button onclick="setLogoBgColor('from-red-400 to-pink-600')" class="w-8 h-8 bg-gradient-to-br from-red-400 to-pink-600 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-colors"></button>
+                        <button onclick="setLogoBgColor('from-yellow-400 to-orange-600')" class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-colors"></button>
+                        <button onclick="setLogoBgColor('from-green-400 to-teal-600')" class="w-8 h-8 bg-gradient-to-br from-green-400 to-teal-600 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-colors"></button>
+                        <button onclick="setLogoBgColor('from-blue-400 to-indigo-600')" class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-colors"></button>
+                        <button onclick="setLogoBgColor('from-purple-400 to-pink-600')" class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-colors"></button>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-3 pt-4">
+                    <button onclick="resetToDefault()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        🔄 Reset Default
+                    </button>
+                    <button onclick="applyLogoChanges()" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        ✅ Terapkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Settings Modal -->
+    <div id="notificationModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">🔔 Pengaturan Notifikasi</h2>
+                <button onclick="closeNotificationSettings()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] space-y-6">
+                <!-- Notification Settings -->
+                <div class="bg-indigo-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-indigo-800 mb-4">⚙️ Pengaturan Umum</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Aktifkan Notifikasi</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="notificationToggle" class="sr-only peer" onchange="toggleNotifications()">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Suara Notifikasi</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="soundToggle" class="sr-only peer" onchange="updateNotificationSettings()">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Getaran (Mobile)</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="vibrationToggle" class="sr-only peer" onchange="updateNotificationSettings()">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Preview Gambar</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="previewToggle" class="sr-only peer" onchange="updateNotificationSettings()">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connected Devices -->
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-green-800 mb-4">📱 Device Terdaftar</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" id="deviceName" placeholder="Nama device baru..." class="flex-1 border border-green-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-300 focus:border-green-300">
+                            <button onclick="addDevice()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                ➕ Tambah
+                            </button>
+                        </div>
+                        <div id="deviceList" class="space-y-2">
+                            <!-- Device list will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Notifications -->
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-purple-800">📬 Notifikasi Terbaru</h3>
+                        <button onclick="sendTestNotification()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200">
+                            🧪 Test
+                        </button>
+                    </div>
+                    <div id="recentNotifications" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Recent notifications will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Note Modal -->
     <div id="editNoteModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -429,6 +597,23 @@
         let currentMusicName = 'Ceria (Default)';
         const availableEmojis = ['❤️', '😍', '👍', '😊', '🔥', '✨', '👏', '😂'];
         let userProfiles = {};
+        
+        // Logo customization variables
+        let currentLogoData = {
+            type: 'default', // 'default', 'preset', 'custom'
+            content: null, // For custom images or preset emoji
+            bgColor: 'from-pink-400 to-purple-600'
+        };
+        
+        // Notification system variables
+        let notificationSettings = {
+            enabled: true,
+            sound: true,
+            vibration: true,
+            showPreview: true
+        };
+        let connectedDevices = [];
+        let notificationQueue = [];
         
         // Login credentials with new user
         const validCredentials = {
@@ -504,13 +689,63 @@
             }
         }
 
+        function saveLogoData() {
+            localStorage.setItem('galleryLogoData', JSON.stringify(currentLogoData));
+        }
+
+        function loadLogoData() {
+            const savedLogo = localStorage.getItem('galleryLogoData');
+            if (savedLogo) {
+                try {
+                    currentLogoData = JSON.parse(savedLogo);
+                    applyLogoToLogin();
+                } catch (error) {
+                    console.error('Error loading logo data:', error);
+                }
+            }
+        }
+
+        function saveNotificationSettings() {
+            localStorage.setItem('galleryNotificationSettings', JSON.stringify(notificationSettings));
+        }
+
+        function loadNotificationSettings() {
+            const savedSettings = localStorage.getItem('galleryNotificationSettings');
+            if (savedSettings) {
+                try {
+                    notificationSettings = JSON.parse(savedSettings);
+                } catch (error) {
+                    console.error('Error loading notification settings:', error);
+                }
+            }
+        }
+
+        function saveConnectedDevices() {
+            localStorage.setItem('galleryConnectedDevices', JSON.stringify(connectedDevices));
+        }
+
+        function loadConnectedDevices() {
+            const savedDevices = localStorage.getItem('galleryConnectedDevices');
+            if (savedDevices) {
+                try {
+                    connectedDevices = JSON.parse(savedDevices);
+                } catch (error) {
+                    console.error('Error loading connected devices:', error);
+                }
+            }
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadCredentials();
             loadUserProfiles();
+            loadLogoData(); // Load custom logo data
+            loadNotificationSettings(); // Load notification settings
+            loadConnectedDevices(); // Load connected devices
             loadSharedData(); // Load shared gallery data
             checkLoginStatus();
             initializeMusic();
+            initializeNotifications(); // Initialize notification system
         });
 
         // Music functions
@@ -1102,6 +1337,18 @@
                 
                 mediaItems.unshift(newItem);
                 addToHistory('add', `Menambahkan ${newItem.type === 'photo' ? 'foto' : 'video'} baru`, `File: ${file.name}`);
+                
+                // Send notification to all devices
+                sendNotificationToDevices({
+                    type: 'media_added',
+                    title: `📸 Media Baru Ditambahkan!`,
+                    message: `${currentUser} menambahkan ${newItem.type === 'photo' ? 'foto' : 'video'} baru`,
+                    mediaType: newItem.type,
+                    mediaPreview: newItem.url,
+                    note: newItem.note,
+                    timestamp: new Date().toISOString()
+                });
+                
                 saveSharedData(); // Auto-save to shared storage
                 renderGallery();
                 closeUploadModal();
@@ -1398,7 +1645,515 @@
             
             addToHistory('print', `Mencetak foto`, `Catatan: "${item.note || 'Tidak ada catatan'}"`);
         }
+
+        // Logo Customization Functions
+        function openLogoCustomizer() {
+            document.getElementById('logoCustomizerModal').classList.remove('hidden');
+            updateLogoPreview();
+        }
+
+        function closeLogoCustomizer() {
+            document.getElementById('logoCustomizerModal').classList.add('hidden');
+            document.getElementById('logoUpload').value = '';
+        }
+
+        function previewLogo() {
+            const fileInput = document.getElementById('logoUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar! Maksimal 2MB.');
+                fileInput.value = '';
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/i)) {
+                alert('Format file tidak didukung! Gunakan JPG, PNG, GIF, atau WebP.');
+                fileInput.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentLogoData.type = 'custom';
+                currentLogoData.content = e.target.result;
+                updateLogoPreview();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function selectPresetLogo(preset) {
+            const presetEmojis = {
+                'default': null,
+                'heart': '❤️',
+                'star': '⭐',
+                'flower': '🌸',
+                'diamond': '💎',
+                'crown': '👑',
+                'moon': '🌙',
+                'sun': '☀️'
+            };
+            
+            currentLogoData.type = preset === 'default' ? 'default' : 'preset';
+            currentLogoData.content = presetEmojis[preset];
+            updateLogoPreview();
+        }
+
+        function setLogoBgColor(colorClass) {
+            currentLogoData.bgColor = colorClass;
+            updateLogoPreview();
+        }
+
+        function updateLogoPreview() {
+            const previewContainer = document.querySelector('#logoCustomizerModal .w-20.h-20');
+            const logoPreview = document.getElementById('logoPreview');
+            const defaultLogoPreview = document.getElementById('defaultLogoPreview');
+            
+            // Update background color
+            previewContainer.className = `w-20 h-20 mx-auto mb-3 bg-gradient-to-br ${currentLogoData.bgColor} rounded-full flex items-center justify-center shadow-lg overflow-hidden`;
+            
+            if (currentLogoData.type === 'custom' && currentLogoData.content) {
+                logoPreview.src = currentLogoData.content;
+                logoPreview.classList.remove('hidden');
+                defaultLogoPreview.classList.add('hidden');
+                previewContainer.innerHTML = `<img src="${currentLogoData.content}" alt="Logo Preview" class="w-full h-full object-cover rounded-full">`;
+            } else if (currentLogoData.type === 'preset' && currentLogoData.content) {
+                logoPreview.classList.add('hidden');
+                defaultLogoPreview.classList.add('hidden');
+                previewContainer.innerHTML = `<span class="text-white text-2xl">${currentLogoData.content}</span>`;
+            } else {
+                logoPreview.classList.add('hidden');
+                defaultLogoPreview.classList.remove('hidden');
+                previewContainer.innerHTML = `
+                    <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
+                        <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
+                        <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="36" cy="16" r="2" fill="white"/>
+                    </svg>
+                `;
+            }
+        }
+
+        function resetToDefault() {
+            currentLogoData = {
+                type: 'default',
+                content: null,
+                bgColor: 'from-pink-400 to-purple-600'
+            };
+            document.getElementById('logoUpload').value = '';
+            updateLogoPreview();
+        }
+
+        function applyLogoChanges() {
+            saveLogoData();
+            applyLogoToLogin();
+            closeLogoCustomizer();
+            
+            // Add to history
+            let logoDescription = '';
+            if (currentLogoData.type === 'custom') {
+                logoDescription = 'Logo custom dari upload';
+            } else if (currentLogoData.type === 'preset') {
+                logoDescription = `Logo preset: ${currentLogoData.content}`;
+            } else {
+                logoDescription = 'Logo default';
+            }
+            
+            addToHistory('logo', `Mengubah logo login: ${logoDescription}`);
+        }
+
+        function applyLogoToLogin() {
+            const loginLogo = document.getElementById('loginLogo');
+            const customLoginLogo = document.getElementById('customLoginLogo');
+            const defaultLoginLogo = document.getElementById('defaultLoginLogo');
+            
+            // Update background color
+            loginLogo.className = `w-24 h-24 bg-gradient-to-br ${currentLogoData.bgColor} rounded-full flex items-center justify-center shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl`;
+            
+            if (currentLogoData.type === 'custom' && currentLogoData.content) {
+                customLoginLogo.src = currentLogoData.content;
+                customLoginLogo.classList.remove('hidden');
+                defaultLoginLogo.classList.add('hidden');
+                loginLogo.innerHTML = `<img src="${currentLogoData.content}" alt="Custom Logo" class="w-full h-full object-cover rounded-full">`;
+            } else if (currentLogoData.type === 'preset' && currentLogoData.content) {
+                customLoginLogo.classList.add('hidden');
+                defaultLoginLogo.classList.add('hidden');
+                loginLogo.innerHTML = `<span class="text-white text-4xl">${currentLogoData.content}</span>`;
+            } else {
+                customLoginLogo.classList.add('hidden');
+                defaultLoginLogo.classList.remove('hidden');
+                loginLogo.innerHTML = `
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
+                        <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
+                        <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="36" cy="16" r="2" fill="white"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Notification System Functions
+        function initializeNotifications() {
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            
+            // Add current device if not exists
+            const currentDevice = {
+                id: 'device_' + Date.now(),
+                name: getDeviceName(),
+                type: getDeviceType(),
+                lastSeen: new Date().toISOString(),
+                isActive: true
+            };
+            
+            // Check if current device already exists
+            const existingDevice = connectedDevices.find(d => d.name === currentDevice.name && d.type === currentDevice.type);
+            if (!existingDevice) {
+                connectedDevices.push(currentDevice);
+                saveConnectedDevices();
+            }
+            
+            // Update notification UI
+            updateNotificationUI();
+            
+            // Simulate periodic device sync
+            setInterval(syncDevices, 30000); // Every 30 seconds
+        }
+
+        function getDeviceName() {
+            const userAgent = navigator.userAgent;
+            if (/iPhone/i.test(userAgent)) return 'iPhone';
+            if (/iPad/i.test(userAgent)) return 'iPad';
+            if (/Android/i.test(userAgent)) return 'Android Device';
+            if (/Windows/i.test(userAgent)) return 'Windows PC';
+            if (/Mac/i.test(userAgent)) return 'Mac';
+            return 'Unknown Device';
+        }
+
+        function getDeviceType() {
+            const userAgent = navigator.userAgent;
+            if (/Mobile|Android|iPhone|iPad/i.test(userAgent)) return 'mobile';
+            if (/Tablet/i.test(userAgent)) return 'tablet';
+            return 'desktop';
+        }
+
+        function showNotificationSettings() {
+            document.getElementById('notificationModal').classList.remove('hidden');
+            updateNotificationUI();
+            renderDeviceList();
+            renderRecentNotifications();
+        }
+
+        function closeNotificationSettings() {
+            document.getElementById('notificationModal').classList.add('hidden');
+        }
+
+        function updateNotificationUI() {
+            document.getElementById('notificationToggle').checked = notificationSettings.enabled;
+            document.getElementById('soundToggle').checked = notificationSettings.sound;
+            document.getElementById('vibrationToggle').checked = notificationSettings.vibration;
+            document.getElementById('previewToggle').checked = notificationSettings.showPreview;
+        }
+
+        function toggleNotifications() {
+            notificationSettings.enabled = document.getElementById('notificationToggle').checked;
+            
+            if (notificationSettings.enabled && 'Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission !== 'granted') {
+                        notificationSettings.enabled = false;
+                        document.getElementById('notificationToggle').checked = false;
+                        alert('Izin notifikasi diperlukan untuk mengaktifkan fitur ini!');
+                    }
+                });
+            }
+            
+            saveNotificationSettings();
+            addToHistory('notification', `${notificationSettings.enabled ? 'Mengaktifkan' : 'Menonaktifkan'} notifikasi`);
+        }
+
+        function updateNotificationSettings() {
+            notificationSettings.sound = document.getElementById('soundToggle').checked;
+            notificationSettings.vibration = document.getElementById('vibrationToggle').checked;
+            notificationSettings.showPreview = document.getElementById('previewToggle').checked;
+            saveNotificationSettings();
+        }
+
+        function addDevice() {
+            const deviceNameInput = document.getElementById('deviceName');
+            const deviceName = deviceNameInput.value.trim();
+            
+            if (!deviceName) {
+                alert('Silakan masukkan nama device!');
+                return;
+            }
+            
+            // Check if device name already exists
+            if (connectedDevices.find(d => d.name === deviceName)) {
+                alert('Nama device sudah ada! Silakan gunakan nama lain.');
+                return;
+            }
+            
+            const newDevice = {
+                id: 'device_' + Date.now(),
+                name: deviceName,
+                type: 'manual', // Manually added device
+                lastSeen: new Date().toISOString(),
+                isActive: true
+            };
+            
+            connectedDevices.push(newDevice);
+            saveConnectedDevices();
+            renderDeviceList();
+            deviceNameInput.value = '';
+            
+            addToHistory('notification', `Menambahkan device: ${deviceName}`);
+        }
+
+        function removeDevice(deviceId) {
+            if (confirm('Apakah Anda yakin ingin menghapus device ini?')) {
+                const device = connectedDevices.find(d => d.id === deviceId);
+                connectedDevices = connectedDevices.filter(d => d.id !== deviceId);
+                saveConnectedDevices();
+                renderDeviceList();
+                
+                if (device) {
+                    addToHistory('notification', `Menghapus device: ${device.name}`);
+                }
+            }
+        }
+
+        function renderDeviceList() {
+            const deviceList = document.getElementById('deviceList');
+            
+            if (connectedDevices.length === 0) {
+                deviceList.innerHTML = '<div class="text-center text-gray-500 py-4 text-sm">Belum ada device yang terdaftar</div>';
+                return;
+            }
+            
+            deviceList.innerHTML = connectedDevices.map(device => {
+                const deviceIcons = {
+                    'mobile': '📱',
+                    'tablet': '📱',
+                    'desktop': '💻',
+                    'manual': '📟'
+                };
+                
+                const statusColor = device.isActive ? 'text-green-600' : 'text-gray-400';
+                const statusText = device.isActive ? 'Online' : 'Offline';
+                
+                return `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">${deviceIcons[device.type] || '📟'}</span>
+                            <div>
+                                <div class="font-medium text-gray-800">${device.name}</div>
+                                <div class="text-xs ${statusColor}">${statusText} • ${formatDateTime(device.lastSeen)}</div>
+                            </div>
+                        </div>
+                        <button onclick="removeDevice('${device.id}')" class="text-red-500 hover:text-red-600 text-sm p-1 rounded" title="Hapus device">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function syncDevices() {
+            // Simulate device sync - update last seen time for current device
+            const currentDeviceName = getDeviceName();
+            const currentDeviceType = getDeviceType();
+            
+            const currentDevice = connectedDevices.find(d => 
+                d.name === currentDeviceName && (d.type === currentDeviceType || d.type === 'manual')
+            );
+            
+            if (currentDevice) {
+                currentDevice.lastSeen = new Date().toISOString();
+                currentDevice.isActive = true;
+                saveConnectedDevices();
+            }
+        }
+
+        function sendNotificationToDevices(notificationData) {
+            if (!notificationSettings.enabled) return;
+            
+            // Add to notification queue
+            notificationQueue.unshift({
+                ...notificationData,
+                id: Date.now(),
+                read: false
+            });
+            
+            // Keep only last 20 notifications
+            if (notificationQueue.length > 20) {
+                notificationQueue = notificationQueue.slice(0, 20);
+            }
+            
+            // Update notification badge
+            updateNotificationBadge();
+            
+            // Send browser notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification(notificationData.title, {
+                    body: notificationData.message,
+                    icon: notificationData.mediaPreview || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiNlOTFlNjMiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIj4KPHJlY3QgeD0iOCIgeT0iMTIiIHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgcng9IjQiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIvPgo8Y2lyY2xlIGN4PSIyNCIgY3k9IjIwIiByPSI0IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTE2IDMyTDIwIDI4TDI0IDMyTDI4IDI4TDMyIDMyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIzNiIgY3k9IjE2IiByPSIyIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+',
+                    badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTIiIGZpbGw9IiNlOTFlNjMiLz4KPHN2ZyB4PSI2IiB5PSI2IiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSI+CjxyZWN0IHg9IjgiIHk9IjEyIiB3aWR0aD0iMzIiIGhlaWdodD0iMjQiIHJ4PSI0IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiLz4KPGNpcmNsZSBjeD0iMjQiIGN5PSIyMCIgcj0iNCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Ik0xNiAzMkwyMCAyOEwyNCAzMkwyOCAyOEwzMiAzMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMzYiIGN5PSIxNiIgcj0iMiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cjwvc3ZnPg==',
+                    tag: 'gallery-notification',
+                    requireInteraction: false,
+                    silent: !notificationSettings.sound
+                });
+                
+                // Auto close notification after 5 seconds
+                setTimeout(() => {
+                    notification.close();
+                }, 5000);
+                
+                // Handle notification click
+                notification.onclick = function() {
+                    window.focus();
+                    notification.close();
+                };
+            }
+            
+            // Play notification sound
+            if (notificationSettings.sound) {
+                playNotificationSound();
+            }
+            
+            // Vibrate on mobile devices
+            if (notificationSettings.vibration && 'vibrate' in navigator) {
+                navigator.vibrate([200, 100, 200]);
+            }
+            
+            // Show in-app notification
+            showInAppNotification(notificationData);
+        }
+
+        function playNotificationSound() {
+            try {
+                // Create a simple notification sound using Web Audio API
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (error) {
+                console.log('Could not play notification sound:', error);
+            }
+        }
+
+        function showInAppNotification(notificationData) {
+            // Create in-app notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border-l-4 border-indigo-500 rounded-lg shadow-lg p-4 max-w-sm z-50 transform translate-x-full transition-transform duration-300';
+            
+            notification.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="text-2xl">${notificationData.mediaType === 'photo' ? '📸' : '🎥'}</div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800 text-sm">${notificationData.title}</div>
+                        <div class="text-gray-600 text-xs mt-1">${notificationData.message}</div>
+                        ${notificationData.note ? `<div class="text-gray-500 text-xs mt-1 italic">"${notificationData.note}"</div>` : ''}
+                        ${notificationSettings.showPreview && notificationData.mediaPreview ? 
+                            `<div class="mt-2">
+                                <img src="${notificationData.mediaPreview}" alt="Preview" class="w-16 h-12 object-cover rounded border">
+                            </div>` : ''
+                        }
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600 text-sm">✕</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notificationBadge');
+            const unreadCount = notificationQueue.filter(n => !n.read).length;
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderRecentNotifications() {
+            const container = document.getElementById('recentNotifications');
+            
+            if (notificationQueue.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-4 text-sm">Belum ada notifikasi</div>';
+                return;
+            }
+            
+            container.innerHTML = notificationQueue.slice(0, 10).map(notification => `
+                <div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg ${notification.read ? 'opacity-60' : ''}">
+                    <div class="text-lg">${notification.mediaType === 'photo' ? '📸' : '🎥'}</div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800 text-sm">${notification.title}</div>
+                        <div class="text-gray-600 text-xs">${notification.message}</div>
+                        <div class="text-gray-400 text-xs mt-1">${formatDateTime(notification.timestamp)}</div>
+                    </div>
+                    ${!notification.read ? '<div class="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>' : ''}
+                </div>
+            `).join('');
+            
+            // Mark notifications as read when viewed
+            notificationQueue.forEach(n => n.read = true);
+            updateNotificationBadge();
+        }
+
+        function sendTestNotification() {
+            sendNotificationToDevices({
+                type: 'test',
+                title: '🧪 Test Notifikasi',
+                message: 'Ini adalah test notifikasi dari sistem galeri',
+                mediaType: 'photo',
+                mediaPreview: null,
+                note: 'Test berhasil!',
+                timestamp: new Date().toISOString()
+            });
+            
+            addToHistory('notification', 'Mengirim test notifikasi');
+        }
     </script>
     </div> <!-- End of galleryApp -->
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a33906149c7e32',t:'MTc1NDM2NDY5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a45b0e0494fd0e',t:'MTc1NDM3NjU3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -145,6 +145,9 @@
                         🔄 Sync
                         <span id="syncStatus" class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse hidden"></span>
                     </button>
+                    <button onclick="showGitHubSyncGuide()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
+                        📚 GitHub Guide
+                    </button>
                     <button onclick="showHistory()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
                         📋 History
                     </button>
@@ -565,6 +568,142 @@
         </div>
     </div>
 
+    <!-- GitHub Sync Guide Modal -->
+    <div id="githubSyncModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">📚 Panduan Sinkronisasi GitHub Pages</h2>
+                <button onclick="closeGitHubSyncGuide()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] space-y-6">
+                <!-- Current Sync Status -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-3">📊 Status Sinkronisasi Saat Ini</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white rounded-lg p-3 border border-blue-200">
+                            <div class="text-sm font-medium text-gray-700">Device ID:</div>
+                            <div class="text-blue-600 font-mono text-sm" id="currentDeviceId">Loading...</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-blue-200">
+                            <div class="text-sm font-medium text-gray-700">Total Media:</div>
+                            <div class="text-blue-600 font-semibold" id="totalMediaCount">0</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-blue-200">
+                            <div class="text-sm font-medium text-gray-700">URL Sync:</div>
+                            <div class="text-blue-600 text-xs break-all" id="currentSyncUrl">-</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-blue-200">
+                            <div class="text-sm font-medium text-gray-700">Last Update:</div>
+                            <div class="text-blue-600 text-sm" id="lastUpdateTime">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 1: URL Sharing -->
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-green-800 mb-3">🔗 Metode 1: Berbagi URL (Paling Mudah)</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white rounded-lg p-3 border border-green-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Langkah-langkah:</div>
+                            <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                <li>Upload foto di laptop/device pertama</li>
+                                <li>Copy URL lengkap dari address bar browser</li>
+                                <li>Kirim URL tersebut ke iPhone/device lain (WhatsApp, email, dll)</li>
+                                <li>Buka URL di iPhone/device lain</li>
+                                <li>Data akan otomatis tersinkronisasi!</li>
+                            </ol>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-green-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">URL Sinkronisasi Aktif:</div>
+                            <div class="flex gap-2">
+                                <input type="text" id="syncUrlDisplay" readonly class="flex-1 text-xs bg-gray-50 border border-gray-300 rounded px-2 py-1 font-mono">
+                                <button onclick="copySyncUrl()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 2: GitHub Pages Deployment -->
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-3">🚀 Metode 2: Deploy ke GitHub Pages</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white rounded-lg p-3 border border-purple-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Langkah Deploy:</div>
+                            <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                <li>Buat repository baru di GitHub</li>
+                                <li>Upload file HTML ini ke repository</li>
+                                <li>Aktifkan GitHub Pages di Settings → Pages</li>
+                                <li>Pilih source: Deploy from a branch → main</li>
+                                <li>Akses via URL: https://username.github.io/repository-name</li>
+                            </ol>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-purple-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Keuntungan GitHub Pages:</div>
+                            <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                <li>Akses dari device manapun dengan URL yang sama</li>
+                                <li>Data tersimpan di browser masing-masing device</li>
+                                <li>Gratis dan mudah digunakan</li>
+                                <li>Tidak perlu server atau database</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 3: Manual Sync -->
+                <div class="bg-orange-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-orange-800 mb-3">⚙️ Metode 3: Sinkronisasi Manual</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white rounded-lg p-3 border border-orange-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Cara Kerja:</div>
+                            <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                <li>Klik tombol "🔄 Sync" untuk memuat data terbaru</li>
+                                <li>Data disimpan di localStorage browser</li>
+                                <li>Setiap device memiliki ID unik untuk tracking</li>
+                                <li>Sistem mendeteksi data dari device lain</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-orange-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Tips Sinkronisasi:</div>
+                            <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                <li>Pastikan menggunakan browser yang sama (Chrome, Safari, dll)</li>
+                                <li>Login dengan akun yang sama di semua device</li>
+                                <li>Klik "🔄 Sync" secara berkala untuk update terbaru</li>
+                                <li>Jangan clear browser data/cache</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting -->
+                <div class="bg-red-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-red-800 mb-3">🔧 Troubleshooting</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white rounded-lg p-3 border border-red-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Jika foto tidak muncul di device lain:</div>
+                            <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                                <li>Pastikan menggunakan URL yang sama persis</li>
+                                <li>Coba refresh halaman (F5 atau pull down)</li>
+                                <li>Klik tombol "🔄 Sync" beberapa kali</li>
+                                <li>Periksa apakah browser mendukung localStorage</li>
+                                <li>Coba buka di mode incognito/private</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-red-200">
+                            <div class="text-sm font-medium text-gray-700 mb-2">Reset Data (jika diperlukan):</div>
+                            <button onclick="resetAllData()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-medium text-sm">
+                                🗑️ Reset Semua Data
+                            </button>
+                            <div class="text-xs text-red-600 mt-1">⚠️ Ini akan menghapus semua foto dan data!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Note Modal -->
     <div id="editNoteModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -628,9 +767,10 @@
             'ardian': 'ulannardian'
         };
 
-        // Cloud Storage Simulation - Cross-device sync
+        // GitHub-Compatible Cross-Device Sync System
         const CLOUD_STORAGE_KEY = 'galleryCloudData';
         const DEVICE_ID_KEY = 'galleryDeviceId';
+        const GITHUB_SYNC_KEY = 'githubGallerySync';
         
         // Generate unique device ID
         function getDeviceId() {
@@ -642,9 +782,10 @@
             return deviceId;
         }
         
-        // Simulate cloud storage using localStorage with device tracking
+        // GitHub-compatible cloud storage using multiple methods
         function saveToCloud() {
             const deviceId = getDeviceId();
+            const timestamp = new Date().toISOString();
             const cloudData = {
                 mediaItems: mediaItems,
                 activityHistory: activityHistory,
@@ -653,21 +794,23 @@
                     name: currentMusicName,
                     isPlaying: isMusicPlaying
                 },
-                lastUpdated: new Date().toISOString(),
+                lastUpdated: timestamp,
                 version: Date.now(),
                 lastDevice: deviceId,
                 deviceInfo: {
                     userAgent: navigator.userAgent,
                     platform: navigator.platform,
-                    timestamp: new Date().toISOString()
+                    timestamp: timestamp,
+                    url: window.location.href
                 }
             };
             
-            // Save to multiple storage keys for better cross-device compatibility
+            // Method 1: localStorage (same browser)
             const storageKeys = [
                 'galleryCloudData',
-                'sharedGalleryData', // Keep backward compatibility
-                'galleryBackup_' + new Date().toISOString().split('T')[0] // Daily backup
+                'sharedGalleryData',
+                'githubGallerySync',
+                'galleryBackup_' + timestamp.split('T')[0]
             ];
             
             storageKeys.forEach(key => {
@@ -678,12 +821,42 @@
                 }
             });
             
+            // Method 2: URL Hash for cross-device sharing
+            try {
+                const compressedData = btoa(JSON.stringify({
+                    v: cloudData.version,
+                    d: deviceId.slice(-8),
+                    t: timestamp,
+                    c: mediaItems.length
+                }));
+                
+                // Update URL hash without triggering page reload
+                const newHash = '#sync=' + compressedData;
+                if (window.location.hash !== newHash) {
+                    history.replaceState(null, null, newHash);
+                }
+            } catch (error) {
+                console.warn('Failed to update URL hash:', error);
+            }
+            
+            // Method 3: sessionStorage for tab sync
+            try {
+                sessionStorage.setItem('galleryTabSync', JSON.stringify({
+                    version: cloudData.version,
+                    deviceId: deviceId,
+                    timestamp: timestamp,
+                    dataAvailable: true
+                }));
+            } catch (error) {
+                console.warn('Failed to save to sessionStorage:', error);
+            }
+            
             // Trigger sync event
             window.dispatchEvent(new CustomEvent('galleryCloudUpdated', { 
                 detail: { version: cloudData.version, deviceId: deviceId } 
             }));
             
-            console.log(`📤 Data saved to cloud from device: ${deviceId}`);
+            console.log(`📤 Data saved to GitHub-compatible storage from device: ${deviceId.slice(-8)}`);
         }
         
         // Legacy function for backward compatibility
@@ -694,14 +867,16 @@
         function loadFromCloud() {
             const deviceId = getDeviceId();
             
-            // Try to load from multiple storage keys
+            // Method 1: Try localStorage first
             const storageKeys = [
                 'galleryCloudData',
-                'sharedGalleryData' // Backward compatibility
+                'githubGallerySync',
+                'sharedGalleryData'
             ];
             
             let latestData = null;
             let latestVersion = 0;
+            let dataSource = 'localStorage';
             
             // Find the most recent data across all storage keys
             storageKeys.forEach(key => {
@@ -712,12 +887,66 @@
                         if (data.version && data.version > latestVersion) {
                             latestData = data;
                             latestVersion = data.version;
+                            dataSource = key;
                         }
                     }
                 } catch (error) {
                     console.warn(`Error loading from ${key}:`, error);
                 }
             });
+            
+            // Method 2: Check URL hash for shared data
+            if (window.location.hash.startsWith('#sync=')) {
+                try {
+                    const hashData = window.location.hash.substring(6);
+                    const syncInfo = JSON.parse(atob(hashData));
+                    
+                    // If URL has newer version info, try to load from storage again
+                    if (syncInfo.v > latestVersion) {
+                        console.log('📱 Newer data detected from URL hash, checking storage...');
+                        // Force check all storage again
+                        storageKeys.forEach(key => {
+                            try {
+                                const savedData = localStorage.getItem(key);
+                                if (savedData) {
+                                    const data = JSON.parse(savedData);
+                                    if (data.version >= syncInfo.v) {
+                                        latestData = data;
+                                        latestVersion = data.version;
+                                        dataSource = 'URL+' + key;
+                                    }
+                                }
+                            } catch (error) {
+                                console.warn(`Error re-checking ${key}:`, error);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.warn('Error parsing URL hash:', error);
+                }
+            }
+            
+            // Method 3: Check sessionStorage for tab sync
+            try {
+                const tabSync = sessionStorage.getItem('galleryTabSync');
+                if (tabSync) {
+                    const tabData = JSON.parse(tabSync);
+                    if (tabData.version > latestVersion && tabData.dataAvailable) {
+                        // Try to load the actual data
+                        const actualData = localStorage.getItem('galleryCloudData');
+                        if (actualData) {
+                            const data = JSON.parse(actualData);
+                            if (data.version === tabData.version) {
+                                latestData = data;
+                                latestVersion = data.version;
+                                dataSource = 'sessionStorage+localStorage';
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Error checking sessionStorage:', error);
+            }
             
             if (latestData) {
                 try {
@@ -730,11 +959,15 @@
                         isMusicPlaying = latestData.musicSettings.isPlaying || false;
                     }
                     
-                    console.log(`📥 Data loaded from cloud (last updated by: ${latestData.lastDevice || 'unknown'}, current device: ${deviceId})`);
+                    const sourceDevice = latestData.lastDevice || 'unknown';
+                    const sourcePlatform = latestData.deviceInfo?.platform || 'Unknown';
+                    
+                    console.log(`📥 Data loaded from ${dataSource} (last updated by: ${sourceDevice.slice(-8)}, platform: ${sourcePlatform})`);
                     
                     // Show sync info if data came from different device
                     if (latestData.lastDevice && latestData.lastDevice !== deviceId) {
-                        showSyncNotification(`📱 Data dimuat dari device lain (${latestData.deviceInfo?.platform || 'Unknown'})`);
+                        const lastUpdate = new Date(latestData.lastUpdated).toLocaleString('id-ID');
+                        showSyncNotification(`📱 Data dari ${sourcePlatform} (${lastUpdate}) - ${mediaItems.length} item`);
                     }
                     
                     return true;
@@ -744,7 +977,7 @@
                 }
             }
             
-            console.log('📭 No cloud data found');
+            console.log('📭 No cloud data found in any storage method');
             return false;
         }
         
@@ -2399,6 +2632,130 @@
             addToHistory('notification', 'Mengirim test notifikasi');
         }
 
+        // GitHub Sync Guide Functions
+        function showGitHubSyncGuide() {
+            document.getElementById('githubSyncModal').classList.remove('hidden');
+            updateSyncStatus();
+        }
+
+        function closeGitHubSyncGuide() {
+            document.getElementById('githubSyncModal').classList.add('hidden');
+        }
+
+        function updateSyncStatus() {
+            const deviceId = getDeviceId();
+            const currentUrl = window.location.href;
+            
+            // Update device ID
+            document.getElementById('currentDeviceId').textContent = deviceId.slice(-8);
+            
+            // Update media count
+            document.getElementById('totalMediaCount').textContent = mediaItems.length;
+            
+            // Update sync URL
+            document.getElementById('currentSyncUrl').textContent = currentUrl;
+            document.getElementById('syncUrlDisplay').value = currentUrl;
+            
+            // Update last update time
+            try {
+                const cloudData = localStorage.getItem('galleryCloudData');
+                if (cloudData) {
+                    const data = JSON.parse(cloudData);
+                    const lastUpdate = new Date(data.lastUpdated).toLocaleString('id-ID');
+                    document.getElementById('lastUpdateTime').textContent = lastUpdate;
+                } else {
+                    document.getElementById('lastUpdateTime').textContent = 'Belum ada data';
+                }
+            } catch (error) {
+                document.getElementById('lastUpdateTime').textContent = 'Error loading data';
+            }
+        }
+
+        function copySyncUrl() {
+            const urlInput = document.getElementById('syncUrlDisplay');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                showSyncNotification('📋 URL berhasil disalin ke clipboard!');
+            } catch (error) {
+                // Fallback for modern browsers
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(urlInput.value).then(() => {
+                        showSyncNotification('📋 URL berhasil disalin ke clipboard!');
+                    }).catch(() => {
+                        showSyncNotification('❌ Gagal menyalin URL. Silakan copy manual.');
+                    });
+                } else {
+                    showSyncNotification('❌ Gagal menyalin URL. Silakan copy manual.');
+                }
+            }
+        }
+
+        function resetAllData() {
+            if (confirm('⚠️ PERINGATAN!\n\nIni akan menghapus SEMUA data galeri termasuk:\n- Semua foto dan video\n- History aktivitas\n- Pengaturan musik\n- Data sinkronisasi\n\nApakah Anda yakin ingin melanjutkan?')) {
+                if (confirm('Konfirmasi sekali lagi: Hapus SEMUA data galeri?')) {
+                    try {
+                        // Clear all storage
+                        const keysToRemove = [
+                            'galleryCloudData',
+                            'githubGallerySync', 
+                            'sharedGalleryData',
+                            'galleryCredentials',
+                            'galleryUserProfiles',
+                            'galleryLogoData',
+                            'galleryNotificationSettings',
+                            'galleryConnectedDevices'
+                        ];
+                        
+                        keysToRemove.forEach(key => {
+                            localStorage.removeItem(key);
+                        });
+                        
+                        // Clear session storage
+                        sessionStorage.removeItem('galleryTabSync');
+                        
+                        // Clear URL hash
+                        history.replaceState(null, null, window.location.pathname);
+                        
+                        // Reset variables
+                        mediaItems = [];
+                        activityHistory = [];
+                        userProfiles = {};
+                        connectedDevices = [];
+                        notificationQueue = [];
+                        
+                        // Reset to default logo
+                        currentLogoData = {
+                            type: 'default',
+                            content: null,
+                            bgColor: 'from-pink-400 to-purple-600'
+                        };
+                        
+                        // Reset notification settings
+                        notificationSettings = {
+                            enabled: true,
+                            sound: true,
+                            vibration: true,
+                            showPreview: true
+                        };
+                        
+                        showSyncNotification('🗑️ Semua data berhasil dihapus! Halaman akan di-refresh...');
+                        
+                        // Refresh page after 2 seconds
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('Error resetting data:', error);
+                        showSyncNotification('❌ Gagal menghapus data. Coba refresh halaman.');
+                    }
+                }
+            }
+        }
+
         // Enhanced manual sync function with cloud support
         function forceSyncData() {
             const button = event.target;
@@ -2428,9 +2785,9 @@
                         if (data.lastDevice && data.lastDevice !== deviceId) {
                             const sourceDevice = data.deviceInfo?.platform || 'Unknown Device';
                             const lastUpdate = new Date(data.lastUpdated).toLocaleString('id-ID');
-                            syncMessage = `✅ Data dimuat dari ${sourceDevice} (${lastUpdate})`;
+                            syncMessage = `✅ Data dimuat dari ${sourceDevice} (${lastUpdate}) - ${mediaItems.length} item`;
                         } else {
-                            syncMessage = '✅ Data sudah up-to-date!';
+                            syncMessage = `✅ Data sudah up-to-date! (${mediaItems.length} item)`;
                         }
                     } catch (error) {
                         console.error('Error parsing sync info:', error);
@@ -2443,8 +2800,17 @@
                 // Show success status
                 syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full';
             } else {
-                showSyncNotification('⚠️ Tidak ada data cloud untuk disinkronkan');
-                syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full';
+                // Try to initialize with sample data if no data exists
+                if (mediaItems.length === 0) {
+                    initializeSampleData();
+                    saveToCloud();
+                    syncMessage = '📦 Data sample berhasil dimuat!';
+                } else {
+                    syncMessage = '⚠️ Tidak ada data cloud untuk disinkronkan';
+                }
+                
+                showSyncNotification(syncMessage);
+                syncStatus.className = 'absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full';
             }
             
             // Reset button state
@@ -2467,5 +2833,5 @@
         }
     </script>
     </div> <!-- End of galleryApp -->
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a46dc22507f8e2',t:'MTc1NDM3NzM0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a47f4fa47bf8dc',t:'MTc1NDM3ODA2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

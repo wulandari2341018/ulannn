@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Foto & Video</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .frame-classic {
+            border: 8px solid #f8f9fa;
+            box-shadow: 0 0 0 2px #e9ecef, 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .frame-modern {
+            border: 2px solid #ffffff;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        
+        .frame-vintage {
+            border: 12px solid #8b5a3c;
+            border-image: linear-gradient(45deg, #8b5a3c, #d4a574) 1;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.3);
+        }
+        
+        .frame-polaroid {
+            border: 16px solid #ffffff;
+            border-bottom: 48px solid #ffffff;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            transform: rotate(-1deg);
+        }
+        
+        .frame-polaroid:nth-child(even) {
+            transform: rotate(1deg);
+        }
+        
+        .gallery-item {
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-4px);
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #fce7f3 0%, #ffffff 50%, #fdf2f8 100%);
+        }
+    </style>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeri Pink</title>
+  <link rel="icon" type="image/png" href="logo web.png">
+</head>
+<body>
+
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Login Page -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl max-w-md w-full p-8">
+            <div class="text-center mb-8">
+                <!-- Logo/Photo -->
+                <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="12" width="32" height="24" rx="4" stroke="white" stroke-width="2"/>
+                        <circle cx="24" cy="20" r="4" stroke="white" stroke-width="2"/>
+                        <path d="M16 32L20 28L24 32L28 28L32 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="36" cy="16" r="2" fill="white"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">📸 Dump!</h1>
+                <p class="text-gray-600">Masuk untuk mengakses galeri foto & video Anda</p>
+            </div>
+            
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="loginUsername" required class="w-full border border-pink-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 transition-colors" placeholder="Masukkan username">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full border border-pink-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 transition-colors" placeholder="Masukkan password">
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    🔐 Masuk ke Galeri
+                </button>
+                
+                <div class="text-center mt-4 space-y-2">
+                    <button type="button" onclick="showForgotPassword()" class="text-pink-500 hover:text-pink-600 text-sm font-medium transition-colors duration-200 block w-full">
+                        🔑 Lupa Password?
+                    </button>
+                    <button type="button" onclick="showRegistration()" class="text-purple-500 hover:text-purple-600 text-sm font-medium transition-colors duration-200 block w-full">
+                        👤 Daftar Akun Baru
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 p-4 bg-pink-50 rounded-lg">
+                <p class="text-sm text-gray-600 mb-2"><strong>Login Credentials:</strong></p>
+                <div class="text-xs text-gray-500 space-y-1">
+                    <div>👤 <strong>wulandari</strong> / ulannardian</div>
+                    <div>👤 <strong>ardian</strong> / ulannardian</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Gallery App (Hidden initially) -->
+    <div id="galleryApp" class="hidden">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-pink-600">📸 Galeri Saya</h1>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <img id="userProfilePic" src="" alt="Profile" class="w-8 h-8 rounded-full object-cover border-2 border-pink-300 hidden">
+                        <span>👤 <span class="font-medium" id="currentUserDisplay"></span></span>
+                    </div>
+                    <button onclick="toggleMusic()" id="musicToggle" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
+                        🎵 Musik ON
+                    </button>
+                    <button onclick="showMusicSelector()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
+                        🎶 Pilih Musik
+                    </button>
+                    <button onclick="showHistory()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
+                        📋 History
+                    </button>
+                    <button onclick="openUploadModal()" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg">
+                        ➕ Tambah Media
+                    </button>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
+                        🚪 Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter & Frame Selection -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg mb-8">
+            <div class="flex flex-wrap items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-700 font-medium">Filter:</span>
+                    <select id="mediaFilter" onchange="filterMedia()" class="bg-white border border-pink-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-pink-300 focus:border-pink-300">
+                        <option value="all">Semua Media</option>
+                        <option value="photo">Foto Saja</option>
+                        <option value="video">Video Saja</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-700 font-medium">Bingkai:</span>
+                    <select id="frameStyle" onchange="changeFrameStyle()" class="bg-white border border-pink-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-pink-300 focus:border-pink-300">
+                        <option value="modern">Modern</option>
+                        <option value="classic">Klasik</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="polaroid">Polaroid</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Gallery items will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Tambah Media Baru</h2>
+                <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <form onsubmit="addMedia(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih File</label>
+                    <input type="file" id="mediaFile" accept="image/*,video/*" required class="w-full border border-pink-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-300 focus:border-pink-300">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                    <textarea id="mediaNote" rows="3" placeholder="Tambahkan catatan untuk media ini..." class="w-full border border-pink-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 resize-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeUploadModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        Tambah
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div id="viewModal" class="fixed inset-0 bg-black/80 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800">Detail Media</h2>
+                <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div id="modalContent" class="space-y-4">
+                    <!-- Content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reaction Picker Modal -->
+    <div id="reactionModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Pilih Reaksi</h2>
+                <button onclick="closeReactionModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-3" id="emojiGrid">
+                <!-- Emoji buttons will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">📋 History Aktivitas</h2>
+                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
+                <div id="historyContent" class="space-y-3">
+                    <!-- History items will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">🔑 Lupa Password</h2>
+                <button onclick="closeForgotPasswordModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-pink-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-700 mb-3">
+                        <strong>Akun yang Tersedia:</strong>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-pink-200 space-y-2">
+                        <div class="text-sm">
+                            <div class="mb-2">👤 <strong>Username:</strong> wulandari</div>
+                            <div class="mb-3">🔐 <strong>Password:</strong> ulannardian</div>
+                        </div>
+                        <div class="text-sm border-t pt-2">
+                            <div class="mb-2">👤 <strong>Username:</strong> ardian</div>
+                            <div>🔐 <strong>Password:</strong> ulannardian</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-xs text-gray-500 text-center">
+                    Silakan gunakan salah satu akun di atas atau daftar akun baru
+                </div>
+                
+                <button onclick="closeForgotPasswordModal()" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Selector Modal -->
+    <div id="musicSelectorModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">🎶 Pilih Musik</h2>
+                <button onclick="closeMusicSelector()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Built-in Music Options -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">🎵 Musik Bawaan:</h3>
+                    <div class="space-y-2">
+                        <button onclick="selectBuiltInMusic('cheerful')" class="w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors duration-200 border border-purple-200">
+                            <div class="font-medium text-purple-700">🌟 Ceria (Default)</div>
+                            <div class="text-xs text-purple-600">Melodi ceria dengan nada C-D-E-F-G</div>
+                        </button>
+                        <button onclick="selectBuiltInMusic('relaxing')" class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 border border-blue-200">
+                            <div class="font-medium text-blue-700">🌊 Santai</div>
+                            <div class="text-xs text-blue-600">Melodi tenang dan menenangkan</div>
+                        </button>
+                        <button onclick="selectBuiltInMusic('upbeat')" class="w-full text-left p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors duration-200 border border-orange-200">
+                            <div class="font-medium text-orange-700">⚡ Energik</div>
+                            <div class="text-xs text-orange-600">Tempo cepat dan bersemangat</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Custom Music Upload -->
+                <div class="border-t pt-4">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">🎧 Upload Musik Sendiri:</h3>
+                    <div class="space-y-3">
+                        <input type="file" id="customMusicFile" accept="audio/*" class="w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-300 focus:border-purple-300">
+                        <button onclick="uploadCustomMusic()" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                            📤 Upload & Gunakan
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Format yang didukung: MP3, WAV, OGG, M4A
+                    </div>
+                </div>
+                
+                <!-- Current Music Display -->
+                <div id="currentMusicDisplay" class="bg-gray-50 rounded-lg p-3 border">
+                    <div class="text-sm font-medium text-gray-700 mb-1">🎵 Musik Aktif:</div>
+                    <div id="currentMusicName" class="text-sm text-gray-600">Ceria (Default)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">👤 Daftar Akun Baru</h2>
+                <button onclick="closeRegistration()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <form onsubmit="handleRegistration(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="regUsername" required minlength="3" class="w-full border border-purple-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-300 focus:border-purple-300" placeholder="Minimal 3 karakter">
+                    <div class="text-xs text-gray-500 mt-1">Username akan otomatis diubah ke huruf kecil</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="regPassword" required minlength="6" class="w-full border border-purple-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-300 focus:border-purple-300" placeholder="Minimal 6 karakter">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+                    <input type="password" id="regPasswordConfirm" required minlength="6" class="w-full border border-purple-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-300 focus:border-purple-300" placeholder="Ulangi password">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Foto Profil (Opsional)</label>
+                    <input type="file" id="regProfilePic" accept="image/jpeg,image/jpg" class="w-full border border-purple-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-300 focus:border-purple-300">
+                    <div class="text-xs text-gray-500 mt-1">Hanya format JPG/JPEG yang diterima</div>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeRegistration()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        Daftar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Note Modal -->
+    <div id="editNoteModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Edit Catatan</h2>
+                <button onclick="closeEditNoteModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <form onsubmit="saveNote(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                    <textarea id="editNoteText" rows="4" class="w-full border border-pink-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 resize-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeEditNoteModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let mediaItems = [];
+        let currentEditingId = null;
+        let activityHistory = [];
+        let isLoggedIn = false;
+        let currentUser = '';
+        let isMusicPlaying = false;
+        let backgroundMusic = null;
+        let customAudio = null;
+        let currentMusicType = 'cheerful';
+        let currentMusicName = 'Ceria (Default)';
+        const availableEmojis = ['❤️', '😍', '👍', '😊', '🔥', '✨', '👏', '😂'];
+        let userProfiles = {};
+        
+        // Login credentials with new user
+        const validCredentials = {
+            'wulandari': 'ulannardian',
+            'ardian': 'ulannardian'
+        };
+
+        // Data persistence functions - Shared gallery for all users
+        function saveSharedData() {
+            const sharedData = {
+                mediaItems: mediaItems,
+                activityHistory: activityHistory,
+                musicSettings: {
+                    type: currentMusicType,
+                    name: currentMusicName,
+                    isPlaying: isMusicPlaying
+                }
+            };
+            localStorage.setItem('sharedGalleryData', JSON.stringify(sharedData));
+        }
+
+        function loadSharedData() {
+            const savedData = localStorage.getItem('sharedGalleryData');
+            if (savedData) {
+                try {
+                    const sharedData = JSON.parse(savedData);
+                    mediaItems = sharedData.mediaItems || [];
+                    activityHistory = sharedData.activityHistory || [];
+                    
+                    if (sharedData.musicSettings) {
+                        currentMusicType = sharedData.musicSettings.type || 'cheerful';
+                        currentMusicName = sharedData.musicSettings.name || 'Ceria (Default)';
+                        isMusicPlaying = sharedData.musicSettings.isPlaying || false;
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Error loading shared data:', error);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        function saveCredentials() {
+            localStorage.setItem('galleryCredentials', JSON.stringify(validCredentials));
+        }
+
+        function loadCredentials() {
+            const savedCredentials = localStorage.getItem('galleryCredentials');
+            if (savedCredentials) {
+                try {
+                    const credentials = JSON.parse(savedCredentials);
+                    Object.assign(validCredentials, credentials);
+                } catch (error) {
+                    console.error('Error loading credentials:', error);
+                }
+            }
+        }
+
+        function saveUserProfiles() {
+            localStorage.setItem('galleryUserProfiles', JSON.stringify(userProfiles));
+        }
+
+        function loadUserProfiles() {
+            const savedProfiles = localStorage.getItem('galleryUserProfiles');
+            if (savedProfiles) {
+                try {
+                    userProfiles = JSON.parse(savedProfiles);
+                } catch (error) {
+                    console.error('Error loading user profiles:', error);
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCredentials();
+            loadUserProfiles();
+            loadSharedData(); // Load shared gallery data
+            checkLoginStatus();
+            initializeMusic();
+        });
+
+        // Music functions
+        function initializeMusic() {
+            // Create built-in melodies using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a note playing function
+                function playNote(frequency, duration, startTime, waveType = 'sine') {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(frequency, startTime);
+                    oscillator.type = waveType;
+                    
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.1, startTime + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+                    
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + duration);
+                }
+                
+                // Different melody patterns
+                const melodies = {
+                    cheerful: {
+                        notes: [
+                            {freq: 523.25, duration: 0.3}, // C5
+                            {freq: 587.33, duration: 0.3}, // D5
+                            {freq: 659.25, duration: 0.3}, // E5
+                            {freq: 698.46, duration: 0.3}, // F5
+                            {freq: 783.99, duration: 0.6}, // G5
+                            {freq: 659.25, duration: 0.3}, // E5
+                            {freq: 523.25, duration: 0.6}, // C5
+                        ],
+                        waveType: 'sine',
+                        interval: 3000
+                    },
+                    relaxing: {
+                        notes: [
+                            {freq: 440.00, duration: 0.8}, // A4
+                            {freq: 493.88, duration: 0.8}, // B4
+                            {freq: 523.25, duration: 1.2}, // C5
+                            {freq: 493.88, duration: 0.8}, // B4
+                            {freq: 440.00, duration: 1.2}, // A4
+                        ],
+                        waveType: 'sine',
+                        interval: 4000
+                    },
+                    upbeat: {
+                        notes: [
+                            {freq: 659.25, duration: 0.2}, // E5
+                            {freq: 783.99, duration: 0.2}, // G5
+                            {freq: 880.00, duration: 0.2}, // A5
+                            {freq: 783.99, duration: 0.2}, // G5
+                            {freq: 659.25, duration: 0.2}, // E5
+                            {freq: 783.99, duration: 0.2}, // G5
+                            {freq: 1046.5, duration: 0.4}, // C6
+                        ],
+                        waveType: 'triangle',
+                        interval: 2000
+                    }
+                };
+                
+                function playBuiltInMelody() {
+                    if (!isMusicPlaying || currentMusicType === 'custom') return;
+                    
+                    const melody = melodies[currentMusicType];
+                    if (!melody) return;
+                    
+                    const currentTime = audioContext.currentTime;
+                    let time = currentTime;
+                    
+                    melody.notes.forEach(note => {
+                        playNote(note.freq, note.duration, time, melody.waveType);
+                        time += note.duration + 0.1;
+                    });
+                    
+                    // Repeat the melody
+                    if (isMusicPlaying && currentMusicType !== 'custom') {
+                        setTimeout(playBuiltInMelody, melody.interval);
+                    }
+                }
+                
+                backgroundMusic = {
+                    play: playBuiltInMelody,
+                    context: audioContext
+                };
+                
+            } catch (error) {
+                console.log('Web Audio API not supported, using fallback');
+                // Fallback for browsers that don't support Web Audio API
+                backgroundMusic = {
+                    play: function() {
+                        console.log('🎵 Music playing (simulated)');
+                    },
+                    context: null
+                };
+            }
+        }
+
+        function toggleMusic() {
+            const button = document.getElementById('musicToggle');
+            
+            if (isMusicPlaying) {
+                isMusicPlaying = false;
+                button.textContent = '🎵 Musik OFF';
+                button.className = 'bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm';
+                
+                // Stop custom audio if playing
+                if (customAudio) {
+                    customAudio.pause();
+                }
+            } else {
+                isMusicPlaying = true;
+                button.textContent = '🎵 Musik ON';
+                button.className = 'bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm';
+                
+                // Resume audio context if needed
+                if (backgroundMusic && backgroundMusic.context && backgroundMusic.context.state === 'suspended') {
+                    backgroundMusic.context.resume();
+                }
+                
+                // Play appropriate music type
+                if (currentMusicType === 'custom' && customAudio) {
+                    customAudio.play();
+                } else if (backgroundMusic) {
+                    backgroundMusic.play();
+                }
+            }
+        }
+
+        function startBackgroundMusic() {
+            if (!isMusicPlaying) {
+                isMusicPlaying = true;
+                const button = document.getElementById('musicToggle');
+                if (button) {
+                    button.textContent = '🎵 Musik ON';
+                    button.className = 'bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm';
+                }
+                
+                // Resume audio context if needed
+                if (backgroundMusic && backgroundMusic.context && backgroundMusic.context.state === 'suspended') {
+                    backgroundMusic.context.resume();
+                }
+                
+                // Play appropriate music type
+                setTimeout(() => {
+                    if (currentMusicType === 'custom' && customAudio) {
+                        customAudio.play();
+                    } else if (backgroundMusic) {
+                        backgroundMusic.play();
+                    }
+                }, 500); // Small delay to ensure everything is loaded
+            }
+        }
+
+        // Music selector functions
+        function showMusicSelector() {
+            document.getElementById('musicSelectorModal').classList.remove('hidden');
+            updateCurrentMusicDisplay();
+        }
+
+        function closeMusicSelector() {
+            document.getElementById('musicSelectorModal').classList.add('hidden');
+        }
+
+        function selectBuiltInMusic(musicType) {
+            // Stop current music
+            if (customAudio) {
+                customAudio.pause();
+                customAudio = null;
+            }
+            
+            currentMusicType = musicType;
+            
+            // Update music name
+            const musicNames = {
+                'cheerful': 'Ceria (Default)',
+                'relaxing': 'Santai',
+                'upbeat': 'Energik'
+            };
+            
+            currentMusicName = musicNames[musicType];
+            updateCurrentMusicDisplay();
+            
+            // If music is currently playing, restart with new type
+            if (isMusicPlaying) {
+                if (backgroundMusic && backgroundMusic.context && backgroundMusic.context.state === 'suspended') {
+                    backgroundMusic.context.resume();
+                }
+                if (backgroundMusic) {
+                    backgroundMusic.play();
+                }
+            }
+            
+            addToHistory('music', `Mengganti musik ke: ${currentMusicName}`);
+            closeMusicSelector();
+        }
+
+        function uploadCustomMusic() {
+            const fileInput = document.getElementById('customMusicFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Silakan pilih file musik terlebih dahulu!');
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.startsWith('audio/')) {
+                alert('File yang dipilih bukan file audio yang valid!');
+                return;
+            }
+            
+            // Create audio element
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Stop current music
+                if (customAudio) {
+                    customAudio.pause();
+                }
+                
+                customAudio = new Audio(e.target.result);
+                customAudio.loop = true;
+                customAudio.volume = 0.3; // Set volume to 30%
+                
+                customAudio.onloadeddata = function() {
+                    currentMusicType = 'custom';
+                    currentMusicName = file.name;
+                    updateCurrentMusicDisplay();
+                    
+                    // If music is currently playing, start the new custom music
+                    if (isMusicPlaying) {
+                        customAudio.play().catch(error => {
+                            console.log('Error playing custom music:', error);
+                            alert('Gagal memutar musik. Silakan coba file lain.');
+                        });
+                    }
+                    
+                    addToHistory('music', `Upload musik custom: ${file.name}`);
+                    closeMusicSelector();
+                };
+                
+                customAudio.onerror = function() {
+                    alert('Gagal memuat file musik. Silakan coba file lain.');
+                };
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function updateCurrentMusicDisplay() {
+            const displayElement = document.getElementById('currentMusicName');
+            if (displayElement) {
+                displayElement.textContent = currentMusicName;
+            }
+        }
+
+        // Registration functions
+        function showRegistration() {
+            document.getElementById('registrationModal').classList.remove('hidden');
+        }
+
+        function closeRegistration() {
+            document.getElementById('registrationModal').classList.add('hidden');
+            // Clear form
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regPasswordConfirm').value = '';
+            document.getElementById('regProfilePic').value = '';
+        }
+
+        function handleRegistration(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('regUsername').value.toLowerCase().trim();
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const profilePicFile = document.getElementById('regProfilePic').files[0];
+            
+            // Validation
+            if (username.length < 3) {
+                alert('Username minimal 3 karakter!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password minimal 6 karakter!');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                alert('Password dan konfirmasi password tidak sama!');
+                return;
+            }
+            
+            if (validCredentials[username]) {
+                alert('Username sudah digunakan! Silakan pilih username lain.');
+                return;
+            }
+            
+            // Validate profile picture if provided
+            if (profilePicFile) {
+                if (!profilePicFile.type.match(/^image\/(jpeg|jpg)$/i)) {
+                    alert('Foto profil harus berformat JPG atau JPEG!');
+                    return;
+                }
+            }
+            
+            // Process registration
+            if (profilePicFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    completeRegistration(username, password, e.target.result);
+                };
+                reader.readAsDataURL(profilePicFile);
+            } else {
+                completeRegistration(username, password, null);
+            }
+        }
+
+        function completeRegistration(username, password, profilePicData) {
+            // Add to credentials
+            validCredentials[username] = password;
+            saveCredentials();
+            
+            // Save profile data
+            userProfiles[username] = {
+                profilePic: profilePicData,
+                registrationDate: new Date().toISOString()
+            };
+            saveUserProfiles();
+            
+            // Add registration to shared history
+            addToHistory('register', `Akun baru ${username} berhasil didaftarkan`);
+            saveSharedData();
+            
+            alert(`Akun ${username} berhasil didaftarkan! Silakan login dengan akun baru Anda.`);
+            closeRegistration();
+        }
+
+        // Forgot password functions
+        function showForgotPassword() {
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').classList.add('hidden');
+        }
+
+        // Login functions
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value.toLowerCase().trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (validCredentials[username] && validCredentials[username] === password) {
+                isLoggedIn = true;
+                currentUser = username;
+                
+                // Load shared data (same gallery for all users)
+                const hasData = loadSharedData();
+                if (!hasData) {
+                    // Initialize with sample data if no shared data exists
+                    initializeSampleData();
+                }
+                
+                // Update UI
+                document.getElementById('currentUserDisplay').textContent = username;
+                
+                // Show profile picture if available
+                const profilePic = document.getElementById('userProfilePic');
+                if (userProfiles[username] && userProfiles[username].profilePic) {
+                    profilePic.src = userProfiles[username].profilePic;
+                    profilePic.classList.remove('hidden');
+                } else {
+                    profilePic.classList.add('hidden');
+                }
+                
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('galleryApp').classList.remove('hidden');
+                
+                addToHistory('login', `User ${username} berhasil masuk ke sistem`);
+                renderGallery();
+                
+                // Start background music automatically
+                setTimeout(() => {
+                    startBackgroundMusic();
+                }, 1000);
+            } else {
+                alert('Username atau password salah! Silakan coba lagi.');
+            }
+        }
+        
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                addToHistory('logout', `User ${currentUser} keluar dari sistem`);
+                
+                // Save shared data before logout
+                saveSharedData();
+                
+                // Reset login state only (keep gallery data)
+                isLoggedIn = false;
+                currentUser = '';
+                
+                // Hide profile picture
+                document.getElementById('userProfilePic').classList.add('hidden');
+                
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('galleryApp').classList.add('hidden');
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+                
+                // Stop music
+                if (isMusicPlaying) {
+                    toggleMusic();
+                }
+            }
+        }
+        
+        function checkLoginStatus() {
+            if (!isLoggedIn) {
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('galleryApp').classList.add('hidden');
+            } else {
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('galleryApp').classList.remove('hidden');
+                document.getElementById('currentUserDisplay').textContent = currentUser;
+                renderGallery();
+            }
+        }
+        
+        // History functions
+        function addToHistory(action, description, mediaInfo = null) {
+            const historyItem = {
+                id: Date.now(),
+                action: action,
+                description: description,
+                user: currentUser,
+                timestamp: new Date().toISOString(),
+                mediaInfo: mediaInfo
+            };
+            
+            activityHistory.unshift(historyItem);
+            
+            // Keep only last 50 activities
+            if (activityHistory.length > 50) {
+                activityHistory = activityHistory.slice(0, 50);
+            }
+        }
+        
+        function showHistory() {
+            const modal = document.getElementById('historyModal');
+            const content = document.getElementById('historyContent');
+            
+            if (activityHistory.length === 0) {
+                content.innerHTML = '<div class="text-center text-gray-500 py-8">Belum ada aktivitas yang tercatat</div>';
+            } else {
+                content.innerHTML = activityHistory.map(item => {
+                    const actionIcons = {
+                        'login': '🔐',
+                        'logout': '🚪',
+                        'add': '➕',
+                        'edit': '✏️',
+                        'delete': '🗑️',
+                        'reaction': '😊',
+                        'print': '🖨️',
+                        'music': '🎵'
+                    };
+                    
+                    const actionColors = {
+                        'login': 'bg-green-100 text-green-700',
+                        'logout': 'bg-red-100 text-red-700',
+                        'add': 'bg-blue-100 text-blue-700',
+                        'edit': 'bg-yellow-100 text-yellow-700',
+                        'delete': 'bg-red-100 text-red-700',
+                        'reaction': 'bg-pink-100 text-pink-700',
+                        'print': 'bg-purple-100 text-purple-700',
+                        'music': 'bg-indigo-100 text-indigo-700'
+                    };
+                    
+                    return `
+                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-8 h-8 rounded-full ${actionColors[item.action] || 'bg-gray-100 text-gray-700'} flex items-center justify-center text-sm font-medium">
+                                ${actionIcons[item.action] || '📝'}
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-gray-800">${item.description}</div>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    👤 ${item.user} • 📅 ${formatDateTime(item.timestamp)}
+                                </div>
+                                ${item.mediaInfo ? `
+                                    <div class="text-xs text-gray-400 mt-1">
+                                        ${item.mediaInfo}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+        
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Initialize with sample data
+        function initializeSampleData() {
+            const sampleItems = [
+                {
+                    id: 1,
+                    type: 'photo',
+                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZmNlN2YzIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSIzMCIgZmlsbD0iI2ZiYjZjZSIvPgo8cGF0aCBkPSJNNTAgMjUwIFE2MCAyMDAgMTAwIDIxMCBRMTQwIDIyMCAxODAgMjAwIFEyMjAgMTgwIDI2MCAyMDAgUTMwMCAyMjAgMzUwIDI1MCBMMzUwIDMwMCBMNTAgMzAwIFoiIGZpbGw9IiNmM2U4ZmYiLz4KPHN2ZyB4PSIzMDAiIHk9IjIwIiB3aWR0aD0iNjAiIGhlaWdodD0iNjAiPgo8cGF0aCBkPSJNMzAgMTBMMjAgMjBMMzAgMzBMNDAgMjBaIiBmaWxsPSIjZjU5ZTBiIi8+Cjwvc3ZnPgo8dGV4dCB4PSIyMDAiIHk9IjE2MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjOWY3YWVhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn4+EIEZvdG8gUGVtYW5kYW5nYW48L3RleHQ+Cjwvc3ZnPg==',
+                    note: 'Pemandangan indah dari puncak gunung saat matahari terbenam',
+                    uploadDate: new Date('2024-01-15').toISOString(),
+                    reactions: {'❤️': 3, '😍': 2, '✨': 1}
+                },
+                {
+                    id: 2,
+                    type: 'video',
+                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZjNlOGZmIi8+CjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIHJ4PSIxMCIgZmlsbD0iIzljM2FmNCIvPgo8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjQwIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTg1IDE0MFYxNjBMMjE1IDE1MFoiIGZpbGw9IiM5YzNhZjQiLz4KPHRleHQgeD0iMjAwIiB5PSIyODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzljM2FmNCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+OrSBWaWRlbyBTYW1wZWw8L3RleHQ+Cjwvc3ZnPg==',
+                    note: 'Video perjalanan liburan ke pantai bersama keluarga',
+                    uploadDate: new Date('2024-01-20').toISOString(),
+                    reactions: {'👍': 5, '😊': 2, '🔥': 1}
+                },
+                {
+                    id: 3,
+                    type: 'photo',
+                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZmRmMmY4Ii8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjEwMCIgcj0iNDAiIGZpbGw9IiNmYmI2Y2UiLz4KPGVsbGlwc2UgY3g9IjE4NSIgY3k9IjkwIiByeD0iNSIgcnk9IjgiIGZpbGw9IiM4YjVjZjYiLz4KPGVsbGlwc2UgY3g9IjIxNSIgY3k9IjkwIiByeD0iNSIgcnk9IjgiIGZpbGw9IiM4YjVjZjYiLz4KPHBhdGggZD0iTTE4NSAxMTBRMjAwIDEyNSAyMTUgMTEwIiBzdHJva2U9IiM4YjVjZjYiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIvPgo8cmVjdCB4PSI1MCIgeT0iMjAwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiNmM2U4ZmYiLz4KPHRleHQgeD0iMjAwIiB5PSIyNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzhjNWNmNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+YiiBGb3RvIFBvcnRyYWl0PC90ZXh0Pgo8L3N2Zz4=',
+                    note: 'Foto portrait teman di studio fotografi',
+                    uploadDate: new Date('2024-01-25').toISOString(),
+                    reactions: {'😍': 4, '👏': 2}
+                }
+            ];
+            
+            mediaItems = sampleItems;
+            renderGallery();
+        }
+
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('mediaNote').value = '';
+        }
+
+        function addMedia(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('mediaFile');
+            const noteInput = document.getElementById('mediaNote');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newItem = {
+                    id: Date.now(),
+                    type: file.type.startsWith('image/') ? 'photo' : 'video',
+                    url: e.target.result,
+                    note: noteInput.value || '',
+                    uploadDate: new Date().toISOString(),
+                    reactions: {}
+                };
+                
+                mediaItems.unshift(newItem);
+                addToHistory('add', `Menambahkan ${newItem.type === 'photo' ? 'foto' : 'video'} baru`, `File: ${file.name}`);
+                saveSharedData(); // Auto-save to shared storage
+                renderGallery();
+                closeUploadModal();
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            const filter = document.getElementById('mediaFilter').value;
+            const frameStyle = document.getElementById('frameStyle').value;
+            
+            let filteredItems = mediaItems;
+            if (filter !== 'all') {
+                filteredItems = mediaItems.filter(item => item.type === filter);
+            }
+            
+            grid.innerHTML = filteredItems.map(item => `
+                <div class="gallery-item bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative ${getFrameClass(frameStyle)} overflow-hidden mb-4">
+                        ${item.type === 'photo' ? 
+                            `<img src="${item.url}" alt="Gallery item" class="w-full h-48 object-cover cursor-pointer" onclick="viewMedia(${item.id})">` :
+                            `<div class="relative w-full h-48 overflow-hidden cursor-pointer" onclick="viewMedia(${item.id})">
+                                <video 
+                                    src="${item.url}" 
+                                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+                                    muted 
+                                    loop
+                                    onmouseenter="this.play()" 
+                                    onmouseleave="this.pause(); this.currentTime = 0;"
+                                    preload="metadata"
+                                >
+                                </video>
+                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-100 hover:opacity-0 transition-opacity duration-300">
+                                    <div class="text-center text-white">
+                                        <div class="text-3xl mb-1">▶️</div>
+                                        <div class="text-xs">Hover untuk preview</div>
+                                    </div>
+                                </div>
+                            </div>`
+                        }
+                        <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-600">
+                            ${item.type === 'photo' ? '📷' : '🎥'}
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">📅 ${formatDate(item.uploadDate)}</span>
+                            <div class="flex gap-1">
+                                ${item.type === 'photo' ? 
+                                    `<button onclick="printPhoto(${item.id})" class="text-blue-500 hover:text-blue-600 text-sm p-1 rounded" title="Print foto">
+                                        🖨️
+                                    </button>` : ''
+                                }
+                                <button onclick="editNote(${item.id})" class="text-pink-500 hover:text-pink-600 text-sm p-1 rounded" title="Edit catatan">
+                                    ✏️
+                                </button>
+                                <button onclick="deleteMedia(${item.id})" class="text-red-500 hover:text-red-600 text-sm p-1 rounded" title="Hapus">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Reactions -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-wrap gap-1">
+                                ${Object.entries(item.reactions || {}).map(([emoji, count]) => 
+                                    `<span class="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">
+                                        ${emoji} ${count}
+                                    </span>`
+                                ).join('')}
+                            </div>
+                            <button onclick="showReactionPicker(${item.id})" class="text-gray-400 hover:text-pink-500 text-lg p-1 rounded" title="Tambah reaksi">
+                                😊+
+                            </button>
+                        </div>
+                        
+                        <div class="text-sm text-gray-700 line-clamp-2">
+                            ${item.note || 'Tidak ada catatan'}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFrameClass(style) {
+            switch(style) {
+                case 'classic': return 'frame-classic';
+                case 'vintage': return 'frame-vintage';
+                case 'polaroid': return 'frame-polaroid';
+                default: return 'frame-modern';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function filterMedia() {
+            renderGallery();
+        }
+
+        function changeFrameStyle() {
+            renderGallery();
+        }
+
+        function viewMedia(id) {
+            const item = mediaItems.find(i => i.id === id);
+            if (!item) return;
+            
+            const modal = document.getElementById('viewModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="text-center">
+                    ${item.type === 'photo' ? 
+                        `<img src="${item.url}" alt="Gallery item" class="max-w-full max-h-96 mx-auto rounded-lg shadow-lg">` :
+                        `<video controls class="max-w-full max-h-96 mx-auto rounded-lg shadow-lg">
+                            <source src="${item.url}" type="video/mp4">
+                            Browser Anda tidak mendukung video.
+                        </video>`
+                    }
+                </div>
+                
+                <div class="bg-pink-50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">${item.type === 'photo' ? '📷' : '🎥'}</span>
+                        <span class="font-medium text-gray-800">
+                            ${item.type === 'photo' ? 'Foto' : 'Video'}
+                        </span>
+                    </div>
+                    
+                    <div class="text-sm text-gray-600 mb-3">
+                        📅 Diupload: ${formatDate(item.uploadDate)}
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-3">
+                        <div class="font-medium text-gray-700 mb-2">📝 Catatan:</div>
+                        <div class="text-gray-600">
+                            ${item.note || 'Tidak ada catatan untuk media ini.'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.add('hidden');
+        }
+
+        function editNote(id) {
+            const item = mediaItems.find(i => i.id === id);
+            if (!item) return;
+            
+            currentEditingId = id;
+            document.getElementById('editNoteText').value = item.note;
+            document.getElementById('editNoteModal').classList.remove('hidden');
+        }
+
+        function closeEditNoteModal() {
+            document.getElementById('editNoteModal').classList.add('hidden');
+            currentEditingId = null;
+        }
+
+        function saveNote(event) {
+            event.preventDefault();
+            
+            if (!currentEditingId) return;
+            
+            const newNote = document.getElementById('editNoteText').value;
+            const item = mediaItems.find(i => i.id === currentEditingId);
+            
+            if (item) {
+                const oldNote = item.note;
+                item.note = newNote;
+                addToHistory('edit', `Mengedit catatan ${item.type === 'photo' ? 'foto' : 'video'}`, `Catatan lama: "${oldNote}" → Catatan baru: "${newNote}"`);
+                saveSharedData(); // Auto-save to shared storage
+                renderGallery();
+                closeEditNoteModal();
+            }
+        }
+
+        function deleteMedia(id) {
+            const item = mediaItems.find(i => i.id === id);
+            if (confirm('Apakah Anda yakin ingin menghapus media ini?')) {
+                mediaItems = mediaItems.filter(item => item.id !== id);
+                addToHistory('delete', `Menghapus ${item.type === 'photo' ? 'foto' : 'video'}`, `Catatan: "${item.note || 'Tidak ada catatan'}"`);
+                saveSharedData(); // Auto-save to shared storage
+                renderGallery();
+            }
+        }
+
+        function showReactionPicker(id) {
+            currentEditingId = id;
+            const modal = document.getElementById('reactionModal');
+            const emojiGrid = document.getElementById('emojiGrid');
+            
+            emojiGrid.innerHTML = availableEmojis.map(emoji => `
+                <button onclick="addReaction('${emoji}')" class="text-3xl p-3 rounded-lg hover:bg-pink-50 transition-colors duration-200 hover:scale-110 transform">
+                    ${emoji}
+                </button>
+            `).join('');
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeReactionModal() {
+            document.getElementById('reactionModal').classList.add('hidden');
+            currentEditingId = null;
+        }
+
+        function addReaction(emoji) {
+            if (!currentEditingId) return;
+            
+            const item = mediaItems.find(i => i.id === currentEditingId);
+            if (item) {
+                if (!item.reactions) item.reactions = {};
+                item.reactions[emoji] = (item.reactions[emoji] || 0) + 1;
+                addToHistory('reaction', `Menambahkan reaksi ${emoji} pada ${item.type === 'photo' ? 'foto' : 'video'}`, `Total reaksi ${emoji}: ${item.reactions[emoji]}`);
+                saveSharedData(); // Auto-save to shared storage
+                renderGallery();
+                closeReactionModal();
+            }
+        }
+
+        function printPhoto(id) {
+            const item = mediaItems.find(i => i.id === id);
+            if (!item || item.type !== 'photo') return;
+            
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            const currentDate = new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Print Foto - ${formatDate(item.uploadDate)}</title>
+                    <style>
+                        @media print {
+                            body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                            .print-container { text-align: center; }
+                            .photo { max-width: 100%; height: auto; border: 2px solid #ddd; margin: 20px 0; }
+                            .photo-info { margin-top: 20px; font-size: 14px; color: #666; }
+                            .note { margin-top: 15px; padding: 10px; background: #f9f9f9; border-left: 4px solid #e91e63; }
+                        }
+                        @media screen {
+                            body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f5f5f5; }
+                            .print-container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+                            .photo { max-width: 100%; height: auto; border: 2px solid #ddd; margin: 20px 0; }
+                            .photo-info { margin-top: 20px; font-size: 14px; color: #666; }
+                            .note { margin-top: 15px; padding: 15px; background: #f9f9f9; border-left: 4px solid #e91e63; border-radius: 4px; }
+                            .print-btn { margin: 20px 0; padding: 10px 20px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; }
+                            .print-btn:hover { background: #c2185b; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <h1 style="color: #e91e63; margin-bottom: 30px;">📸 Galeri Foto</h1>
+                        <img src="${item.url}" alt="Foto untuk print" class="photo">
+                        <div class="photo-info">
+                            <p><strong>Tanggal Upload:</strong> ${formatDate(item.uploadDate)}</p>
+                            <p><strong>Tanggal Print:</strong> ${currentDate}</p>
+                        </div>
+                        ${item.note ? `
+                            <div class="note">
+                                <h3 style="margin: 0 0 10px 0; color: #e91e63;">📝 Catatan:</h3>
+                                <p style="margin: 0;">${item.note}</p>
+                            </div>
+                        ` : ''}
+                        <button class="print-btn" onclick="window.print()" style="display: block; margin: 30px auto 0;">🖨️ Print Foto</button>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            
+            addToHistory('print', `Mencetak foto`, `Catatan: "${item.note || 'Tidak ada catatan'}"`);
+        }
+    </script>
+    </div> <!-- End of galleryApp -->
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a33906149c7e32',t:'MTc1NDM2NDY5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

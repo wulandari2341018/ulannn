@@ -138,6 +138,9 @@
                         🔔 Notifikasi
                         <span id="notificationBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
                     </button>
+                    <button onclick="forceSyncData()" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm" title="Sinkronkan data dengan device lain">
+                        🔄 Sync
+                    </button>
                     <button onclick="showHistory()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full font-medium transition-colors duration-200 shadow-lg text-sm">
                         📋 History
                     </button>
@@ -621,7 +624,7 @@
             'ardian': 'ulannardian'
         };
 
-        // Data persistence functions - Shared gallery for all users
+        // Data persistence functions - Shared gallery for all users with auto-sync
         function saveSharedData() {
             const sharedData = {
                 mediaItems: mediaItems,
@@ -630,9 +633,16 @@
                     type: currentMusicType,
                     name: currentMusicName,
                     isPlaying: isMusicPlaying
-                }
+                },
+                lastUpdated: new Date().toISOString(),
+                version: Date.now() // Add version for sync detection
             };
             localStorage.setItem('sharedGalleryData', JSON.stringify(sharedData));
+            
+            // Trigger sync event for other tabs/windows
+            window.dispatchEvent(new CustomEvent('galleryDataUpdated', { 
+                detail: { version: sharedData.version } 
+            }));
         }
 
         function loadSharedData() {
@@ -656,6 +666,86 @@
                 }
             }
             return false;
+        }
+
+        // Auto-sync functionality
+        let lastKnownVersion = 0;
+        
+        function startAutoSync() {
+            // Listen for storage changes from other tabs/windows
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'sharedGalleryData' && e.newValue) {
+                    try {
+                        const newData = JSON.parse(e.newValue);
+                        if (newData.version && newData.version > lastKnownVersion) {
+                            console.log('🔄 Sinkronisasi data dari device lain...');
+                            loadSharedData();
+                            if (isLoggedIn) {
+                                renderGallery();
+                                showSyncNotification('Data berhasil disinkronkan dari device lain!');
+                            }
+                            lastKnownVersion = newData.version;
+                        }
+                    } catch (error) {
+                        console.error('Error syncing data:', error);
+                    }
+                }
+            });
+            
+            // Listen for custom sync events
+            window.addEventListener('galleryDataUpdated', function(e) {
+                if (e.detail.version > lastKnownVersion) {
+                    lastKnownVersion = e.detail.version;
+                }
+            });
+            
+            // Periodic sync check (every 5 seconds)
+            setInterval(checkForUpdates, 5000);
+        }
+        
+        function checkForUpdates() {
+            if (!isLoggedIn) return;
+            
+            const savedData = localStorage.getItem('sharedGalleryData');
+            if (savedData) {
+                try {
+                    const sharedData = JSON.parse(savedData);
+                    if (sharedData.version && sharedData.version > lastKnownVersion) {
+                        console.log('🔄 Memuat update terbaru...');
+                        loadSharedData();
+                        renderGallery();
+                        showSyncNotification('Galeri diperbarui dengan data terbaru!');
+                        lastKnownVersion = sharedData.version;
+                    }
+                } catch (error) {
+                    console.error('Error checking updates:', error);
+                }
+            }
+        }
+        
+        function showSyncNotification(message) {
+            // Create sync notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🔄</span>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translate(-50%, -100%)';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 3000);
         }
 
         function saveCredentials() {
@@ -743,6 +833,7 @@
             loadNotificationSettings(); // Load notification settings
             loadConnectedDevices(); // Load connected devices
             loadSharedData(); // Load shared gallery data
+            startAutoSync(); // Start auto-sync system
             checkLoginStatus();
             initializeMusic();
             initializeNotifications(); // Initialize notification system
@@ -2153,7 +2244,33 @@
             
             addToHistory('notification', 'Mengirim test notifikasi');
         }
+
+        // Manual sync function
+        function forceSyncData() {
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            // Show loading state
+            button.textContent = '🔄 Syncing...';
+            button.disabled = true;
+            
+            // Force reload data
+            const hasData = loadSharedData();
+            if (hasData && isLoggedIn) {
+                renderGallery();
+                showSyncNotification('✅ Data berhasil disinkronkan!');
+                addToHistory('sync', 'Melakukan sinkronisasi manual data galeri');
+            } else {
+                showSyncNotification('⚠️ Tidak ada data untuk disinkronkan');
+            }
+            
+            // Reset button state
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1000);
+        }
     </script>
     </div> <!-- End of galleryApp -->
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a45b0e0494fd0e',t:'MTc1NDM3NjU3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a46389726140d0',t:'MTc1NDM3NjkyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
